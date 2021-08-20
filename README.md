@@ -1,6 +1,12 @@
 # Adacord CLI
 
 
+## Install the cli
+
+```bash
+poetry install
+```
+
 ## Create a new user
 
 ```bash
