@@ -1,7 +1,7 @@
 import typer
 
 from . import commons
-from .api import AdacordApi
+from .api import api
 
 app = typer.Typer()
 
@@ -13,9 +13,9 @@ def create():
     """
     typer.echo("Hey there 👋")
 
-    email = typer.prompt("What's your email?")
-    password = typer.prompt("What's your password?", hide_input=True)
-    AdacordApi().create_user(email, password)
+    email = typer.prompt("> What's your email?")
+    password = typer.prompt("> What's your password?", hide_input=True)
+    api.create_user(email, password)
 
     typer.echo("Awesome, check your email!")
 
