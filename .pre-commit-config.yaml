@@ -1,0 +1,39 @@
+---
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: check-ast
+      - id: check-symlinks
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+        args: [--unsafe]
+      - id: detect-private-key
+      - id: trailing-whitespace
+      - id: no-commit-to-branch # No (direct) commits to main
+  - repo: https://github.com/psf/black
+    rev: 21.7b0
+    hooks:
+      - id: black
+        language_version: python3.9
+  - repo: https://github.com/pre-commit/mirrors-isort
+    rev: v5.9.3
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.9.2
+    hooks:
+    - id: flake8
+  - repo: local
+    hooks:
+    -   id: pytest-no-only
+        name: check for @pytest.mark.only
+        description: 'A search for the `@pytest.mark.only` decorator'
+        entry: '@pytest.mark.only'
+        language: pygrep
+        files: 'test_*'
+        types: [python]

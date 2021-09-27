@@ -1,6 +1,6 @@
 import typer
 
-from . import endpoint, user, webhook
+from . import user, webhook, endpoint
 
 app = typer.Typer()
 app.add_typer(user.app, name="user")
