@@ -31,7 +31,7 @@ jobs:
             dev-poetry-
 
       - name: Install CI dependencies
-        run: poetry install --dev
+        run: make install-ci
 
       - name: Black code
         run: poetry run black --check src
