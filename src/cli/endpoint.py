@@ -14,7 +14,9 @@ def create(name: str = typer.Option(...), schema: str = None):
     if schema:
         schema = commons.read_file(schema)
     payload = AdacordApi().add_endpoint(name, schema)
-    typer.echo(f"Endpoint created, start sending data {payload['endpoint_url']}")
+    typer.echo(
+        f"Endpoint created, start sending data {payload['endpoint_url']}"
+    )
 
 
 @app.command()
@@ -23,7 +25,9 @@ def list():
     Get a list of your endpoints.
     """
     payload = AdacordApi().list_endpoints()
-    typer.echo(typer.style("Name \t\t\t URL", fg=typer.colors.WHITE, bold=True))
+    typer.echo(
+        typer.style("Name \t\t\t URL", fg=typer.colors.WHITE, bold=True)
+    )
     for row in payload:
         typer.echo(f" {row['name']} \t\t  {row['endpoint_url']}")
 
