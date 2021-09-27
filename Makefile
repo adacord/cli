@@ -17,4 +17,4 @@ install:: install-base
 install-ci:: install-base
 
 install-ci::
-	poetry install --dev
+	poetry install
