@@ -34,13 +34,13 @@ jobs:
         run: poetry install --dev
 
       - name: Black code
-        run: poetry run black --check cli tests
+        run: poetry run black --check src
 
       - name: Check imports order
-        run: poetry run isort -c cli tests
+        run: poetry run isort -c src
 
       - name: Flake8 code
-        run: poetry run flake8 cli tests
+        run: poetry run flake8 src
 
       - name: Test code
         run: poetry run pytest -xv
