@@ -15,9 +15,15 @@ def create():
 
     email = typer.prompt("> What's your email?")
     password = typer.prompt("> What's your password?", hide_input=True)
-    api.create_user(email, password)
+    api.user.create(email, password)
 
-    typer.echo("Awesome, check your email!")
+    typer.echo(
+        typer.style(
+            "Awesome, check your email to confirm your email address",
+            fg=typer.colors.WHITE,
+            bold=True,
+        )
+    )
 
 
 @app.command()
@@ -25,6 +31,6 @@ def login(email: str = typer.Option(...), password: str = typer.Option(...)):
     """
     Login with the cli.
     """
-    payload = AdacordApi().login(email, password)
-    auth = {"email": email, "token": payload["token"]}
-    commons.save_token(auth)
+    response = api.user.login(email, password)
+    auth = {"email": email, "token": response["access_token"]}
+    commons.save_auth(auth)
