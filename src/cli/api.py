@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Union
 
 import requests
 
@@ -84,11 +84,13 @@ class Bucket:
         data = {"description": description}
         return self.client.post("/buckets", json=data)
 
-    def get(self, bucket: str = None) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+    def get(
+        self, bucket: str = None
+    ) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
         if bucket:
             return self.client.get(f"/buckets/{bucket}")
 
-        return self.client.get(f"/buckets")
+        return self.client.get("/buckets")
 
     def delete(self, bucket: str) -> Dict[str, Any]:
         return self.client.delete(f"/buckets/{bucket}")

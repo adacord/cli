@@ -1,6 +1,6 @@
 import typer
 
-from . import bucket, user, webhook
+from . import user, bucket, webhook
 
 app = typer.Typer()
 app.add_typer(user.app, name="user")

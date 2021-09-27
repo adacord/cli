@@ -1,6 +1,5 @@
 import pytest
-
-from cli.api import AdacordApi, Client
+from cli.api import Client, AdacordApi
 
 
 @pytest.fixture

@@ -23,7 +23,9 @@ def cli_wrapper(func):
             return func(*args, **kwargs)
         except AdacordApiError as err:
             typer.echo(
-                typer.style(f"Error: {err.message}", fg=typer.colors.RED, bold=True)
+                typer.style(
+                    f"Error: {err.message}", fg=typer.colors.RED, bold=True
+                )
             )
 
     return decorator

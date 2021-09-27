@@ -22,7 +22,11 @@ def create(description: str = typer.Option(...)):
     )
     first_row = ("uuid", "name", "description", "url")
     values = [payload[entry] for entry in first_row]
-    typer.echo(tabulate([first_row, values], headers="firstrow", tablefmt="fancy_grid"))
+    typer.echo(
+        tabulate(
+            [first_row, values], headers="firstrow", tablefmt="fancy_grid"
+        )
+    )
 
 
 @app.command()
@@ -39,7 +43,9 @@ def list():
         rows.append([index, *[row[entry] for entry in first_row]])
 
     first_row = ("", *first_row)
-    typer.echo(tabulate([first_row, *rows], headers="firstrow", tablefmt="fancy_grid"))
+    typer.echo(
+        tabulate([first_row, *rows], headers="firstrow", tablefmt="fancy_grid")
+    )
 
 
 @app.command()
@@ -50,7 +56,9 @@ def delete(bucket: str):
     payload = api.bucket.delete(bucket)
     print(payload)
     typer.echo(
-        typer.style(f"Bucket {bucket} deleted.", fg=typer.colors.WHITE, bold=True)
+        typer.style(
+            f"Bucket {bucket} deleted.", fg=typer.colors.WHITE, bold=True
+        )
     )
 
 
