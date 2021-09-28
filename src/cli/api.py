@@ -5,8 +5,12 @@ import requests
 from .commons import get_token
 from .exceptions import AdacordApiError
 
+HTTP_TIMEOUT = 5
+
 
 class Client:
+    """Low level HTTP Client interface."""
+
     def __init__(
         self, client=None, base_path="https://api.adacord.com", get_token=None
     ):
@@ -25,11 +29,13 @@ class Client:
 
         headers = {}
         if auth:
-            headers = self.auth()
+            headers.update(self.auth())
 
-        r = self.client.post(full_path, json=json, headers=headers)
+        r = self.client.post(
+            full_path, json=json, headers=headers, timeout=HTTP_TIMEOUT
+        )
 
-        if r.ok:
+        if not r.ok:
             raise AdacordApiError(r.json(), status_code=r.status_code)
 
         return r.json()
@@ -39,11 +45,13 @@ class Client:
 
         headers = {}
         if auth:
-            headers = self.auth()
+            headers.update(self.auth())
 
-        r = self.client.get(full_path, params=params, headers=headers)
+        r = self.client.get(
+            full_path, params=params, headers=headers, timeout=HTTP_TIMEOUT
+        )
 
-        if (r.status_code // 100) > 2:
+        if not r.ok:
             raise AdacordApiError(r.json(), status_code=r.status_code)
 
         return r.json()
@@ -53,11 +61,13 @@ class Client:
 
         headers = {}
         if auth:
-            headers = self.auth()
+            headers.update(self.auth())
 
-        r = self.client.delete(full_path, headers=headers)
+        r = self.client.delete(
+            full_path, headers=headers, timeout=HTTP_TIMEOUT
+        )
 
-        if (r.status_code // 100) > 2:
+        if not r.ok:
             raise AdacordApiError(r.json(), status_code=r.status_code)
 
         return r.json()
