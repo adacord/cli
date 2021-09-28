@@ -25,7 +25,7 @@ def create_bucket(description: str = typer.Option("")):
     )
     first_row = ("uuid", "name", "description", "url")
     values = [payload[entry] for entry in first_row]
-    first_row = ("ID", "name", "description", "url")
+    first_row = ("ID", "Description", "URL")
     typer.echo(
         tabulate(
             [first_row, values], headers="firstrow", tablefmt="fancy_grid"
