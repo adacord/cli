@@ -29,7 +29,7 @@ class Client:
 
         r = self.client.post(full_path, json=json, headers=headers)
 
-        if (r.status_code // 100) > 2:
+        if r.ok:
             raise AdacordApiError(r.json(), status_code=r.status_code)
 
         return r.json()
