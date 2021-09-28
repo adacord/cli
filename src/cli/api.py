@@ -5,7 +5,7 @@ import requests
 from .commons import get_token
 from .exceptions import AdacordApiError
 
-HTTP_TIMEOUT = 5
+HTTP_TIMEOUT = 10
 
 
 class Client:
@@ -83,7 +83,7 @@ class User:
 
     def login(self, email: str, password: str) -> Dict[str, Any]:
         data = {"email": email, "password": password}
-        return self.client.post("/token", json=data, auth=False)
+        return self.client.post("/users/token", json=data, auth=False)
 
 
 class Bucket:
@@ -114,6 +114,16 @@ class Bucket:
     ):
         data = {"description": description, "query": query, "url": url}
         return self.client.post(f"/buckets/{bucket}/webhooks", json=data)
+
+    def create_token(self, bucket: str, description: str = None):
+        data = {"description": description}
+        return self.client.post(f"/buckets/{bucket}/tokens", json=data)
+
+    def get_tokens(self, bucket: str):
+        return self.client.get(f"/buckets/{bucket}/tokens")
+
+    def delete_token(self, bucket: str, token_uuid: str):
+        return self.client.delete(f"/buckets/{bucket}/tokens/{token_uuid}")
 
 
 class AdacordApi:
