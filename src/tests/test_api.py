@@ -9,7 +9,7 @@ class TestUser:
             "email_verified": "user_record.uid",
         }
 
-        requests_mock.post("https://api.adacord.com/users", json=data)
+        requests_mock.post("https://api.adacord.com/v1/users", json=data)
         api.user.create("email", "password")
 
     def test_user__login(self, requests_mock, api):
@@ -19,7 +19,7 @@ class TestUser:
             "user_email": "",
             "expires_in": "",
         }
-        requests_mock.post("https://api.adacord.com/token", json=data)
+        requests_mock.post("https://api.adacord.com/v1/users/token", json=data)
         response = api.user.login("email", "password")
         assert response
 
@@ -31,7 +31,7 @@ class TestBucket:
         #     "description": "",
         #     "data_schema": {},
         # }
-        requests_mock.post("https://api.adacord.com/buckets", json=data)
+        requests_mock.post("https://api.adacord.com/v1/buckets", json=data)
         response = api.bucket.create("my-bucket")
         assert response == data
 
@@ -41,7 +41,7 @@ class TestBucket:
         #     "description": "",
         #     "data_schema": {},
         # }
-        requests_mock.get("https://api.adacord.com/buckets", json=data)
+        requests_mock.get("https://api.adacord.com/v1/buckets", json=data)
         response = api.bucket.get()
         assert response
 
@@ -52,7 +52,7 @@ class TestBucket:
         #     "data_schema": {},
         # }
         requests_mock.get(
-            "https://api.adacord.com/buckets/my-bucket", json=data
+            "https://api.adacord.com/v1/buckets/my-bucket", json=data
         )
         response = api.bucket.get("my-bucket")
         assert response
@@ -64,7 +64,7 @@ class TestBucket:
         #     "data_schema": {},
         # }
         requests_mock.delete(
-            "https://api.adacord.com/buckets/email", json=data
+            "https://api.adacord.com/v1/buckets/email", json=data
         )
         response = api.bucket.delete("email")
         assert response
@@ -76,7 +76,7 @@ class TestBucket:
         #     "data_schema": {},
         # }
         requests_mock.post(
-            "https://api.adacord.com/buckets/email/query", json=data
+            "https://api.adacord.com/v1/buckets/email/query", json=data
         )
         response = api.bucket.query("email", "select * from my-bucket")
         assert response
@@ -88,7 +88,7 @@ class TestBucket:
         #     "data_schema": {},
         # }
         requests_mock.post(
-            "https://api.adacord.com/buckets/my-bucket/webhooks", json=data
+            "https://api.adacord.com/v1/buckets/my-bucket/webhooks", json=data
         )
         response = api.bucket.create_webhook(
             "my-bucket",

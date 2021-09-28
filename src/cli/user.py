@@ -2,11 +2,13 @@ import typer
 
 from . import commons
 from .api import api
+from .exceptions import cli_wrapper
 
 app = typer.Typer()
 
 
 @app.command()
+@cli_wrapper
 def create():
     """
     Create a new user.
@@ -27,6 +29,7 @@ def create():
 
 
 @app.command()
+@cli_wrapper
 def login(email: str = typer.Option(...), password: str = typer.Option(...)):
     """
     Login with the cli.
