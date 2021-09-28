@@ -59,7 +59,7 @@ def delete_bucket(bucket: str):
     """
     Delete a bucket.
     """
-    payload = api.bucket.delete(bucket)
+    api.bucket.delete(bucket)
     typer.echo(
         typer.style(
             f"Bucket {bucket} deleted.", fg=typer.colors.WHITE, bold=True
@@ -155,7 +155,7 @@ def delete_token(bucket: str, token: str):
     """
     Delete an API Token.
     """
-    payload = api.bucket.delete_token(bucket, token)
+    api.bucket.delete_token(bucket, token)
     typer.echo(
         typer.style(
             f"API Token {token} deleted.", fg=typer.colors.WHITE, bold=True
