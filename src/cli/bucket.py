@@ -25,6 +25,7 @@ def create_bucket(description: str = typer.Option("")):
     )
     first_row = ("uuid", "name", "description", "url")
     values = [payload[entry] for entry in first_row]
+    first_row = ("ID", "name", "description", "url")
     typer.echo(
         tabulate(
             [first_row, values], headers="firstrow", tablefmt="fancy_grid"
@@ -39,12 +40,13 @@ def list_bucket():
     Get a list of your buckets.
     """
     payload = api.bucket.get()
-    first_row = ("uuid", "Name", "Description", "Url")
+    first_row = ("uuid", "description", "url")
 
     rows = []
     for index, row in enumerate(payload, 1):
-        rows.append([index, *[row[entry.lower()] for entry in first_row]])
+        rows.append([index, *[row[entry] for entry in first_row]])
 
+    first_row = ("ID", "Description", "URL")
     first_row = ("", *first_row)
     typer.echo(
         tabulate([first_row, *rows], headers="firstrow", tablefmt="fancy_grid")
@@ -58,7 +60,6 @@ def delete_bucket(bucket: str):
     Delete a bucket.
     """
     payload = api.bucket.delete(bucket)
-    print(payload)
     typer.echo(
         typer.style(
             f"Bucket {bucket} deleted.", fg=typer.colors.WHITE, bold=True
@@ -93,14 +94,21 @@ def create_token(
     payload = api.bucket.create_token(bucket, description)
     typer.echo(
         typer.style(
-            "API Token created",
+            "API Token created.",
+            fg=typer.colors.WHITE,
+            bold=True,
+        )
+    )
+    typer.echo(
+        typer.style(
+            "⚠️  PLEASE SAVE THE TOKEN, THIS IS THE ONLY TIME WHERE WE DISPLAY IT ⚠️",
             fg=typer.colors.WHITE,
             bold=True,
         )
     )
     first_row = ("uuid", "token", "description", "created_on")
     values = [payload[entry] for entry in first_row]
-    first_row = ("uuid", "Token", "Description", "Created on")
+    first_row = ("ID", "Token", "Description", "Created on")
     typer.echo(
         tabulate(
             [first_row, values], headers="firstrow", tablefmt="fancy_grid"
@@ -123,7 +131,9 @@ def list_tokens(
     if not tokens:
         typer.echo(
             typer.style(
-                f"No tokens for Bucket({bucket}).", fg=typer.colors.WHITE, bold=True
+                f"No tokens for Bucket({bucket}).",
+                fg=typer.colors.WHITE,
+                bold=True,
             )
         )
         return
@@ -132,7 +142,7 @@ def list_tokens(
     for index, row in enumerate(tokens, 1):
         rows.append([index, *[row[entry] for entry in first_row]])
 
-    first_row = ("uuid", "Token", "Description", "Created on")
+    first_row = ("ID", "Token", "Description", "Created on")
     first_row = ("", *first_row)
     typer.echo(
         tabulate([first_row, *rows], headers="firstrow", tablefmt="fancy_grid")

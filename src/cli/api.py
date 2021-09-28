@@ -12,7 +12,10 @@ class Client:
     """Low level HTTP Client interface."""
 
     def __init__(
-        self, client=None, base_path="https://api.adacord.com", get_token=None
+        self,
+        client=None,
+        base_path="https://api.adacord.com/v1",
+        get_token=None,
     ):
         self.client = client
         if client is None:
