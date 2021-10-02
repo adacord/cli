@@ -44,10 +44,10 @@ def list_bucket():
 
     if not payload:
         typer.echo(
-                typer.style(
-                    f"Ohhhh... no buckets :)", fg=typer.colors.MAGENTA, bold=True
-                )
+            typer.style(
+                "Ohhhh... no buckets :)", fg=typer.colors.MAGENTA, bold=True
             )
+        )
         return
 
     rows = []
