@@ -1,4 +1,5 @@
 import functools
+from json import JSONDecodeError
 
 import typer
 
@@ -25,6 +26,14 @@ def cli_wrapper(func):
             typer.echo(
                 typer.style(
                     f"Error: {err.message}", fg=typer.colors.RED, bold=True
+                )
+            )
+        except JSONDecodeError:
+            typer.echo(
+                typer.style(
+                    "Ouch.... something bad happed :/",
+                    fg=typer.colors.RED,
+                    bold=True,
                 )
             )
 
