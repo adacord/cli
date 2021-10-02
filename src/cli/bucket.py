@@ -42,6 +42,14 @@ def list_bucket():
     payload = api.bucket.get()
     first_row = ("uuid", "description", "url")
 
+    if not payload:
+        typer.echo(
+                typer.style(
+                    f"Ohhhh... no buckets :)", fg=typer.colors.MAGENTA, bold=True
+                )
+            )
+        return
+
     rows = []
     for index, row in enumerate(payload, 1):
         rows.append([index, *[row[entry] for entry in first_row]])
