@@ -4,7 +4,7 @@
 ## Install the cli
 
 ```bash
-poetry install
+pip install adacord
 ```
 
 ## Create a new user
@@ -34,11 +34,11 @@ adacord bucket list
 ## Query endpoint
 
 ```bash
-adacord bucket query my-endpoint-1 --query 'select * from my-endpoint-1'
+adacord bucket query my-bucket --query 'select * from my-bucket'
 ```
 
-## Create webhook
+## For developmenet
 
 ```bash
-adacord webhook create --bucket my-endpoint --query "select * from my-endpoint" --url https://my-url.com
+poetry install
 ```
