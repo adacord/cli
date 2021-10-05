@@ -1,0 +1,26 @@
+---
+name: CI PYPI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  codeChecks:
+    name: Publish to pypi
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.9'
+
+      - name: Install Poetry
+        run: make install-base
+
+      - name: Publish to pypy
+        run: poetry publish --build -u __token__ -p ${{ secrets.PYPI_TOKEN }} -n
