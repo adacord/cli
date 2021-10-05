@@ -1,8 +1,29 @@
 [tool.poetry]
-name = "adacord-cli"
+name = "adacord"
 version = "0.1.1"
-description = "Adacord CLI"
+description = "The cli and sdk for adacord.com"
 authors = ["Christian Barra <me@christianbarra.com>", "Alexandre Savio <alexsavio@gmail.com>" ]
+
+license = "MIT"
+readme = "README.md"
+homepage = "https://www.adacord.com"
+repository = "https://github.com/adacord/cli"
+
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+include = [
+    "LICENSE",
+]
 
 packages = [
     { include = "src/cli" },
