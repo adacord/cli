@@ -3,8 +3,7 @@ name: Adacord CLI CI
 
 on:
   pull_request:
-    paths:
-      - 'src/**'
+
   push:
     branches:
       - main
@@ -13,7 +12,7 @@ jobs:
   codeChecks:
     strategy:
       matrix:
-        python_version: [3.6, 3.7, 3.8, 3.9, 3.10]
+        python_version: [3.6, 3.7, 3.8, 3.9]
     name: Check style and run tests
     runs-on: ubuntu-latest
     steps:
