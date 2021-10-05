@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "adacord-cli"
-version = "0.1.0"
+version = "0.1.1"
 description = "Adacord CLI"
 authors = ["Christian Barra <me@christianbarra.com>", "Alexandre Savio <alexsavio@gmail.com>" ]
 

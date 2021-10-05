@@ -1,5 +1,5 @@
 ---
-name: Publish to PYPI
+name: CI PYPI
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ on:
 
 jobs:
   codeChecks:
-    name: Check style and run tests
+    name: Publish to pypi
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,5 +26,4 @@ jobs:
         run: make install-base
 
       - name: Publish to pypy
-        run: poetry publish --build -n -u __token__ -p {{ secrets.PYPI_TOKEN }}
-
+        run: poetry publish --build -u __token__ -p {{ secrets.PYPI_TOKEN }} -n
