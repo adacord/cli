@@ -11,6 +11,9 @@ on:
 
 jobs:
   codeChecks:
+    strategy:
+      matrix:
+        python_version: [3.6, 3.7, 3.8, 3.9, 3.10]
     name: Check style and run tests
     runs-on: ubuntu-latest
     steps:
@@ -20,7 +23,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v1
         with:
-          python-version: '3.9'
+          python-version: ${{ matrix.python_version }}
 
       - name: Load cached Poetry local folder
         uses: actions/cache@v2

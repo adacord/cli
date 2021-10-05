@@ -1,8 +1,12 @@
 [tool.poetry]
-name = "cli"
+name = "adacord-cli"
 version = "0.1.0"
-description = ""
-authors = ["Christian Barra <me@christianbarra.com>"]
+description = "Adacord CLI"
+authors = ["Christian Barra <me@christianbarra.com>", "Alexandre Savio <alexsavio@gmail.com>" ]
+
+packages = [
+    { include = "src/cli" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
