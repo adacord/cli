@@ -1,4 +1,4 @@
-from cli.commons import get_token, read_auth, save_auth
+from adacord.cli.commons import get_token, read_auth, save_auth
 
 
 def test_write_read_auth(tmp_path):
