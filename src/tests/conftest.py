@@ -1,4 +1,5 @@
 import pytest
+
 from adacord.cli.api import Client, AdacordApi
 
 
