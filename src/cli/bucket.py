@@ -78,12 +78,12 @@ def delete_bucket(bucket: str):
 @app.command("query")
 @cli_wrapper
 def query_bucket(
-    bucket: str = typer.Option(...), query: str = typer.Option(...)
+    bucket_name: str, query: str = typer.Option(...)
 ):
     """
     Query a bucket using a SQL query.
     """
-    payload = api.bucket.query(bucket, query)
+    payload = api.adacrd.query(bucket_name, query)
     for row in payload:
         typer.echo(row)
 

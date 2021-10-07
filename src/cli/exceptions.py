@@ -1,5 +1,5 @@
+import json
 import functools
-from json import JSONDecodeError
 
 import typer
 
@@ -7,8 +7,7 @@ import typer
 class AdacordApiError(Exception):
     def __init__(self, message, status_code):
         if isinstance(message, dict):
-            if "message" in message:
-                self.message = message["message"]
+            self.message = message.get("message", json.dumps(message))
         else:
             self.message = message
 
@@ -28,7 +27,7 @@ def cli_wrapper(func):
                     f"Error: {err.message}", fg=typer.colors.RED, bold=True
                 )
             )
-        except JSONDecodeError:
+        except json.JSONDecodeError:
             typer.echo(
                 typer.style(
                     "Ouch.... something bad happed :/",
