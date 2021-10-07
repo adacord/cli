@@ -19,7 +19,9 @@ class TestUser:
             "user_email": "",
             "expires_in": "",
         }
-        requests_mock.post("http://fake.example:8000/v1/users/token", json=data)
+        requests_mock.post(
+            "http://fake.example:8000/v1/users/token", json=data
+        )
         response = api.user.login("email", "password")
         assert response
 

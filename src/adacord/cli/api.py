@@ -1,4 +1,3 @@
-from json import JSONDecodeError
 from typing import Any, Dict, List, Union, Callable
 
 import requests
@@ -11,7 +10,6 @@ HTTP_TIMEOUT = 10
 
 
 class AccessTokenAuth(AuthBase):
-
     def __init__(self, token_getter: Callable[[], str]):
         self._token_getter = token_getter
         self._token = None
@@ -36,13 +34,14 @@ class AdacordHTTPAdapter(requests.adapters.HTTPAdapter):
         try:
             response.raise_for_status()
         except requests.HTTPError as error:
-            raise AdacordApiError(response.json(), status_code=response.status_code) from error
+            raise AdacordApiError(
+                response.json(), status_code=response.status_code
+            ) from error
         else:
             return response
 
 
 class Client(requests.Session):
-
     def __init__(self, base_path: str, auth: AuthBase = None):
         super().__init__()
         self.auth: AuthBase = auth or AccessTokenAuth()
@@ -52,9 +51,13 @@ class Client(requests.Session):
 
     def request(self, method, url, *args, **kwargs):
         url = f"{self.base_path}{url}"
-        response = super().request(method, url, timeout=HTTP_TIMEOUT, *args, **kwargs)
+        response = super().request(
+            method, url, timeout=HTTP_TIMEOUT, *args, **kwargs
+        )
         if not response.ok:
-            raise AdacordApiError(response.json(), status_code=response.status_code)
+            raise AdacordApiError(
+                response.json(), status_code=response.status_code
+            )
         return response
 
 
@@ -122,7 +125,6 @@ class Bucket:
 
 
 class Adacrd:
-
     def client(self, bucket_name: str) -> requests.Session:
         client = Client(
             base_path=f"http://{bucket_name}.adacrd.in:8000/v1",
@@ -133,7 +135,7 @@ class Adacrd:
     def query(self, bucket_name: str, query: str):
         client = self.client(bucket_name)
         data = {"query": query}
-        response = client.post(f"/query", json=data)
+        response = client.post("/query", json=data)
         return response.json()
 
 
