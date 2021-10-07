@@ -148,8 +148,7 @@ class AdacordApi:
 
 def create_api() -> AdacordApi:
     client = Client(
-        # base_path="https://api.adacord.com/v1"
-        base_path="http://127.0.0.1:8000/v1",
+        base_path="https://api.adacord.com/v1",
         auth=AccessTokenAuth(get_token),
     )
     return AdacordApi(client)
