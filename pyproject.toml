@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "adacord"
-version = "0.1.1"
+version = "0.1.2"
 description = "The cli and sdk for adacord.com"
 authors = ["Christian Barra <me@christianbarra.com>", "Alexandre Savio <alexsavio@gmail.com>" ]
 
@@ -26,7 +26,7 @@ include = [
 ]
 
 packages = [
-    { include = "src/cli" },
+    { include = "adacord", from = "src" },
 ]
 
 [tool.poetry.dependencies]
@@ -45,7 +45,7 @@ black = "^21.9b0"
 pytest-socket = "^0.4.1"
 
 [tool.poetry.scripts]
-adacord = "cli.main:app"
+adacord = "adacord.cli.main:app"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

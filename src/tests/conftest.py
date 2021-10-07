@@ -1,6 +1,6 @@
 import pytest
 
-from cli.api import Client, AdacordApi, AccessTokenAuth
+from adacord.cli.api import Client, AdacordApi, AccessTokenAuth
 
 
 @pytest.fixture
