@@ -15,7 +15,7 @@ def create_bucket(description: str = typer.Option("")):
     """
     Create a new bucket.
     """
-    payload = api.bucket.create(description)
+    bucket = api.buckets.create(description)
     typer.echo(
         typer.style(
             "Bucket created, you can start sending data 🚀",
@@ -24,7 +24,7 @@ def create_bucket(description: str = typer.Option("")):
         )
     )
     first_row = ("uuid", "name", "description", "url")
-    values = [payload[entry] for entry in first_row]
+    values = [getattr(bucket, entry) for entry in first_row]
     first_row = ("ID", "Description", "URL")
     typer.echo(
         tabulate(
@@ -39,7 +39,7 @@ def list_bucket():
     """
     Get a list of your buckets.
     """
-    payload = api.bucket.get()
+    payload = api.buckets.get()
     first_row = ("uuid", "description", "url")
 
     if not payload:
@@ -67,7 +67,7 @@ def delete_bucket(bucket: str):
     """
     Delete a bucket.
     """
-    api.bucket.delete(bucket)
+    api.buckets.delete(bucket)
     typer.echo(
         typer.style(
             f"Bucket {bucket} deleted.", fg=typer.colors.WHITE, bold=True
@@ -97,7 +97,7 @@ def create_token(
     """
     Create a new API Token.
     """
-    payload = api.bucket.create_token(bucket, description)
+    payload = api.buckets.create_token(bucket, description)
     typer.echo(
         typer.style(
             "API Token created.",
@@ -132,7 +132,7 @@ def list_tokens(
     """
     Get your tokens.
     """
-    tokens = api.bucket.get_tokens(bucket)
+    tokens = api.buckets.get_tokens(bucket)
     first_row = ("uuid", "token", "description", "created_on")
     if not tokens:
         typer.echo(
@@ -161,7 +161,7 @@ def delete_token(bucket: str, token: str):
     """
     Delete an API Token.
     """
-    api.bucket.delete_token(bucket, token)
+    api.buckets.delete_token(bucket, token)
     typer.echo(
         typer.style(
             f"API Token {token} deleted.", fg=typer.colors.WHITE, bold=True

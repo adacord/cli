@@ -71,19 +71,7 @@ class TestBucket:
         response = api.bucket.delete("email")
         assert response
 
-    def test_bucket__query(self, requests_mock, api):
-        data = {"query": "", "result": []}
-        # data = {
-        #     "description": "",
-        #     "data_schema": {},
-        # }
-        requests_mock.post(
-            "http://fake.example:8000/v1/buckets/email/query", json=data
-        )
-        response = api.bucket.query("email", "select * from my-bucket")
-        assert response
-
-    def test_bucklet__webhook_create(self, requests_mock, api):
+    def test_bucket__webhook_create(self, requests_mock, api):
         data = {"uuid": "", "name": {}, "url": "https://your-bucket.ada.in"}
         # data = {
         #     "description": "",
@@ -97,4 +85,18 @@ class TestBucket:
             "select * from my-bucket",
             "https://my-webhook-url.com",
         )
+        assert response
+
+
+class TestAdacrd:
+    def test_adacrd__query(self, requests_mock, api):
+        data = {"query": "", "result": []}
+        # data = {
+        #     "description": "",
+        #     "data_schema": {},
+        # }
+        requests_mock.post(
+            "http://fake.example:8000/v1/buckets/email/query", json=data
+        )
+        response = api.bucket.query("email", "select * from my-bucket")
         assert response
