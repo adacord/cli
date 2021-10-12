@@ -34,7 +34,7 @@ class TestBucket:
         #     "data_schema": {},
         # }
         requests_mock.post("http://fake.example:8000/v1/buckets", json=data)
-        response = api.bucket.create("my-bucket")
+        response = api.bucket.create("my-bucket", schemaless=False)
         assert response == data
 
     def test_bucket__get_all(self, requests_mock, api):
