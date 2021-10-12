@@ -79,8 +79,8 @@ class Bucket:
     def __init__(self, client: requests.Session):
         self.client = client
 
-    def create(self, description: str):
-        data = {"description": description}
+    def create(self, description: str, schemaless: bool):
+        data = {"description": description, "schemaless": schemaless}
         response = self.client.post("/buckets", json=data)
         return response.json()
 
