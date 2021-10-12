@@ -16,7 +16,9 @@ def create():
     typer.echo("Hey there 👋")
 
     email = typer.prompt("> What's your email?")
-    password = typer.prompt("> What's your password?", hide_input=True)
+    password = typer.prompt(
+        "> What's your password?", hide_input=True, confirmation_prompt=True
+    )
     api.user.create(email, password)
 
     typer.echo(
