@@ -105,13 +105,14 @@ class User(ApiClient):
         return response.json()
 
 
-class Buckets(ApiClient):
-    def create(self, description: str) -> "Bucket":
-        data = {"description": description}
-        url = self.url_for("/buckets")
-        response = self.client.post(url, json=data)
-        bucket_payload = response.json()
-        return self._bucket_from_payload(bucket_payload)
+class Bucket:
+    def __init__(self, client: requests.Session):
+        self.client = client
+
+    def create(self, description: str, schemaless: bool):
+        data = {"description": description, "schemaless": schemaless}
+        response = self.client.post("/buckets", json=data)
+        return response.json()
 
     def _bucket_from_payload(self, bucket_payload: Dict[str, Any]) -> "Bucket":
         return Bucket(bucket_name=bucket_payload["name"], client=self.client)

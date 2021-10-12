@@ -16,12 +16,14 @@ def create():
     typer.echo("Hey there 👋")
 
     email = typer.prompt("> What's your email?")
-    password = typer.prompt("> What's your password?", hide_input=True)
+    password = typer.prompt(
+        "> What's your password?", hide_input=True, confirmation_prompt=True
+    )
     api.user.create(email, password)
 
     typer.echo(
         typer.style(
-            "Awesome, check your email to confirm your email address",
+            "Awesome, check your email to confirm your email address!",
             fg=typer.colors.WHITE,
             bold=True,
         )
@@ -30,10 +32,11 @@ def create():
 
 @app.command()
 @cli_wrapper
-def login(email: str = typer.Option(...), password: str = typer.Option(...)):
+def login(email: str = typer.Option(...)):
     """
     Login with the cli.
     """
+    password = typer.prompt("> What's your password?", hide_input=True)
     response = api.user.login(email, password)
     auth = {"email": email, "token": response["access_token"]}
     commons.save_auth(auth)

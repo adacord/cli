@@ -11,11 +11,19 @@ app.add_typer(token_app, name="token")
 
 @app.command("create")
 @cli_wrapper
-def create_bucket(description: str = typer.Option("")):
+def create_bucket(
+    description: str = typer.Option("", show_default=False),
+    schemaless: bool = typer.Option(
+        False,
+        "--schemaless",
+        help="Create a schemaless bucket.",
+        show_default=False,
+    ),
+):
     """
     Create a new bucket.
     """
-    bucket = api.buckets.create(description)
+    payload = api.bucket.create(description, schemaless=schemaless)
     typer.echo(
         typer.style(
             "Bucket created, you can start sending data 🚀",
@@ -39,8 +47,8 @@ def list_bucket():
     """
     Get a list of your buckets.
     """
-    payload = api.buckets.get()
-    first_row = ("uuid", "description", "url")
+    payload = api.bucket.get()
+    first_row = ("uuid", "description", "url", "schemaless")
 
     if not payload:
         typer.echo(
@@ -54,7 +62,7 @@ def list_bucket():
     for index, row in enumerate(payload, 1):
         rows.append([index, *[row[entry] for entry in first_row]])
 
-    first_row = ("ID", "Description", "URL")
+    first_row = ("ID", "Description", "URL", "Schemaless")
     first_row = ("", *first_row)
     typer.echo(
         tabulate([first_row, *rows], headers="firstrow", tablefmt="fancy_grid")
