@@ -1,3 +1,5 @@
+import json
+
 import pytest
 import requests
 import requests_mock
@@ -46,6 +48,7 @@ class TestHTTPClient:
         http_client = HTTPClient(auth=access_token_auth)
         assert http_client
         assert isinstance(http_client, requests.Session)
+        assert http_client.auth.get_token() == "test"
 
     def test_with_token(self):
         http_client = HTTPClient.with_token(token="1234")
@@ -71,6 +74,24 @@ class TestHTTPClient:
             )
             with pytest.raises(AdacordApiError):
                 http_client.request("GET", "https://tururu.com")
+
+    def test_request_headers(self, http_client):
+        def callback(request, context):
+            assert "Authorization" in request.headers
+
+        with requests_mock.Mocker() as m:
+            m.get("https://tururu.com", text=callback)
+            http_client.get("https://tururu.com")
+
+    def test_request_headers_with_token(self, access_token_auth):
+        http_client = HTTPClient(auth=access_token_auth)
+
+        def callback(request, context):
+            assert "Authorization" in request.headers
+
+        with requests_mock.Mocker() as m:
+            m.get("https://tururu.com", text=callback)
+            http_client.get("https://tururu.com")
 
 
 class TestApiClient:
@@ -154,7 +175,7 @@ class TestBuckets:
             assert response
             assert response == data
 
-    def test_get_all(self, api):
+    def test_list(self, api):
         client = api.Buckets
         data = [
             {
@@ -166,7 +187,7 @@ class TestBuckets:
         ]
         with requests_mock.Mocker() as mock:
             mock.get("https://api.adacord.com/v1/buckets/", json=data)
-            response = client.get()
+            response = client.list()
             assert response
             assert response[0].uuid == data[0]["uuid"]
             assert response[0].name == data[0]["name"]
@@ -401,3 +422,22 @@ class TestAdacordApi:
             assert response.name == data["name"]
             assert response.description == data["description"]
             assert response.url == data["url"]
+
+    def test_http_client(self):
+        data = [
+            {
+                "uuid": "123",
+                "name": {},
+                "url": "https://your-bucket.ada.in",
+                "description": "",
+            }
+        ]
+
+        def callback(request, context):
+            assert "Authorization" in request.headers
+            return json.dumps(data)
+
+        api = AdacordApi.Client(token="1234")
+        with requests_mock.Mocker() as mock:
+            mock.get("https://api.adacord.com/v1/buckets/", text=callback)
+            api.Buckets.list()

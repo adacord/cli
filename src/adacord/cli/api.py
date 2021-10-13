@@ -53,8 +53,9 @@ class HTTPClient(requests.Session):
     def __init__(self, auth: AuthBase):
         super().__init__()
         self.auth: AuthBase = auth
-        self.mount("http://", CustomHTTPAdapter())
-        self.mount("https://", CustomHTTPAdapter())
+        adapter = CustomHTTPAdapter()
+        self.mount("http://", adapter)
+        self.mount("https://", adapter)
 
     def request(self, method: str, url: str, *args, **kwargs):
         response = super().request(
@@ -68,7 +69,7 @@ class HTTPClient(requests.Session):
 
     @classmethod
     def with_token(cls, token: str) -> "HTTPClient":
-        return HTTPClient(auth=AccessTokenAuth(token_getter=lambda: token))
+        return cls(auth=AccessTokenAuth(token_getter=lambda: token))
 
 
 class ApiClient:
@@ -128,24 +129,22 @@ class Buckets(ApiClient):
         bucket_args = BucketArgs(**bucket_payload)
         return Bucket(bucket_args, client=self.client, buckets_router=self)
 
-    # TODO: get by name as well
-    def get(self, bucket: str = None) -> Union["Bucket", List["Bucket"]]:
-        if bucket:
-            endpoint = f"/buckets/{bucket}"
-        else:
-            endpoint = "/buckets/"
-
+    def list(self) -> List["Bucket"]:
+        endpoint = "/buckets/"
         url = self.url_for(endpoint)
         response = self.client.get(url)
         bucket_payload = response.json()
+        return [
+            self._bucket_from_payload(payload) for payload in bucket_payload
+        ]
 
-        if bucket:
-            return self._bucket_from_payload(bucket_payload)
-        else:
-            return [
-                self._bucket_from_payload(payload)
-                for payload in bucket_payload
-            ]
+    # TODO: get by name as well
+    def get(self, bucket: str) -> "Bucket":
+        endpoint = f"/buckets/{bucket}"
+        url = self.url_for(endpoint)
+        response = self.client.get(url)
+        bucket_payload = response.json()
+        return self._bucket_from_payload(bucket_payload)
 
     def delete(self, bucket: str) -> Dict[str, Any]:
         url = self.url_for(f"/buckets/{bucket}")
@@ -248,4 +247,4 @@ class AdacordApi:
 
 
 def create_api() -> AdacordApi:
-    return AdacordApi()
+    return AdacordApi.Client(get_token())

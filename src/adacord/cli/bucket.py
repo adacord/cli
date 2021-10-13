@@ -49,7 +49,7 @@ def list_buckets():
     Get a list of your buckets.
     """
     api = create_api()
-    payload = api.Buckets.get()
+    payload = api.Buckets.list()
     first_row = ("uuid", "description", "url", "schemaless")
 
     if not payload:
