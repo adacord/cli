@@ -2,13 +2,18 @@
 # Use this as an Adacord SDK
 
 ```python
-from adacord import api, settings
+from adacord import api, get_token
 
 # either pass the token or search for ADACORD_TOKEN
-ada = api.AdacordApi.Client(token=settings.token)
+token = get_token()
+
+ada = api.Client(token=token)
 
 # create a bucket
-bucket: Bucket = ada.create_bucket(description="my-bucket", schemaless=False)
+bucket: Bucket = ada.Buckets.create(description="my-bucket", schemaless=False)
+
+# list the buckets in my account
+buckets: List[Bucket] = ada.Buckets.list()
 
 # get an existing bucket from uuid
 bucket: Bucket = ada.get_bucket(uuid=bucket.uuid)
