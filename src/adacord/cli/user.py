@@ -43,3 +43,38 @@ def login(email: str = typer.Option(...)):
     response = api.User.login(email, password)
     auth = {"email": email, "token": response["access_token"]}
     commons.save_auth(auth)
+
+
+@app.command()
+@cli_wrapper
+def reset_password(email: str = typer.Option(...)):
+    """
+    Reset your user's password
+    """
+    api = create_api()
+    api.User.request_password_reset(email)
+    typer.echo(
+        typer.style(
+            "Awesome, check your email for the next steps for the password reset!",
+            fg=typer.colors.WHITE,
+            bold=True,
+        )
+    )
+
+
+@app.command()
+@cli_wrapper
+def email_verification(email: str = typer.Option(...)):
+    """
+    Request a new email verification email
+    """
+    password = typer.prompt("> What's your password?", hide_input=True)
+    api = create_api()
+    api.User.request_verification_email(email, password)
+    typer.echo(
+        typer.style(
+            "Awesome, check your email to confirm your email address!",
+            fg=typer.colors.WHITE,
+            bold=True,
+        )
+    )

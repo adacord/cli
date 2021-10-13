@@ -119,6 +119,20 @@ class User(ApiClient):
         response = self.client.post(url, json=data, auth=False)
         return response.json()
 
+    def request_password_reset(self, email: str) -> Dict[str, Any]:
+        data = {"email": email}
+        url = self.url_for("/users/password_reset")
+        response = self.client.post(url, json=data, auth=False)
+        return response.json()
+
+    def request_verification_email(
+        self, email: str, password: str
+    ) -> Dict[str, Any]:
+        data = {"email": email, "password": password}
+        url = self.url_for("/users/verification_email")
+        response = self.client.post(url, json=data, auth=False)
+        return response.json()
+
 
 class Buckets(ApiClient):
     def create(self, description: str, schemaless: bool):

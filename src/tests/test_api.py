@@ -157,6 +157,27 @@ class TestUser:
             response = client.login("email", "password")
             assert response
 
+    def test_request_password_reset(self, api):
+        client = api.User
+        data = {"message": "ok"}
+        with requests_mock.Mocker() as mock:
+            mock.post(
+                "https://api.adacord.com/v1/users/password_reset", json=data
+            )
+            response = client.request_password_reset("email")
+            assert response
+
+    def test_request_verification_email(self, api):
+        client = api.User
+        data = {"message": "ok"}
+        with requests_mock.Mocker() as mock:
+            mock.post(
+                "https://api.adacord.com/v1/users/verification_email",
+                json=data,
+            )
+            response = client.request_verification_email("email", "password")
+            assert response
+
 
 @pytest.fixture
 def fake_bucket_data():
