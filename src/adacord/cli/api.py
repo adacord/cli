@@ -1,7 +1,6 @@
 import urllib
-from dataclasses import dataclass
-from functools import partialmethod
 from typing import Any, Dict, List, Union, Callable
+from dataclasses import dataclass
 
 import requests
 from requests.auth import AuthBase
@@ -13,6 +12,8 @@ HTTP_TIMEOUT = 10
 
 
 class AccessTokenAuth(AuthBase):
+    """A class that adds a Bearer token to the request headers."""
+
     def __init__(self, token_getter: Callable[[], str]):
         self._token_getter = token_getter
         self._token = None
@@ -27,9 +28,11 @@ class AccessTokenAuth(AuthBase):
         return request
 
 
-class AdacordHTTPAdapter(requests.adapters.HTTPAdapter):
+class CustomHTTPAdapter(requests.adapters.HTTPAdapter):
     """
-    This Adapter is responsible for retrying the failed requests (with exponential backoff)
+    This adapter is a wrapper for the default HTTPAdapter for further
+    customization. It does:
+        - custom exception raising.
     """
 
     def send(self, req, *args, **kwargs):
@@ -45,13 +48,15 @@ class AdacordHTTPAdapter(requests.adapters.HTTPAdapter):
 
 
 class HTTPClient(requests.Session):
-    def __init__(self, auth: AuthBase = None):
-        super().__init__()
-        self.auth: AuthBase = auth or AccessTokenAuth()
-        self.mount("http://", AdacordHTTPAdapter())
-        self.mount("https://", AdacordHTTPAdapter())
+    """A class to make HTTP requests using the CustomHTTPAdapter."""
 
-    def request(self, method, url, *args, **kwargs):
+    def __init__(self, auth: AuthBase):
+        super().__init__()
+        self.auth: AuthBase = auth
+        self.mount("http://", CustomHTTPAdapter())
+        self.mount("https://", CustomHTTPAdapter())
+
+    def request(self, method: str, url: str, *args, **kwargs):
         response = super().request(
             method, url, timeout=HTTP_TIMEOUT, *args, **kwargs
         )
@@ -63,7 +68,7 @@ class HTTPClient(requests.Session):
 
     @classmethod
     def with_token(cls, token: str) -> "HTTPClient":
-        return HTTPClient(auth=AccessTokenAuth(token))
+        return HTTPClient(auth=AccessTokenAuth(token_getter=lambda: token))
 
 
 class ApiClient:
@@ -74,48 +79,54 @@ class ApiClient:
 
     @property
     def base_path(self) -> str:
-        return "https://api.adacord.com/v1"
+        return "https://api.adacord.com"
 
-    def url_for(self, endpoint: str) -> str:
-        return urllib.parse.urljoin(self.base_path, endpoint)
+    def url_for(self, endpoint: str, version: str = "v1") -> str:
+        """Return the absolute URL to the endpoint for the given API version."""
+        return urllib.parse.urljoin(self.base_path, f"{version}/{endpoint}")
 
 
-class AdacrdClient(ApiClient):
+class AdacrdClient:
     """Client for the Adacrd Bucket API"""
 
     def __init__(self, bucket_name: str, client: HTTPClient):
-        super().__init__(client)
+        self.client = client
         self.bucket_name = bucket_name
 
     @property
     def base_path(self) -> str:
-        return f"https://{self.bucket_name}.adacrd.in/v1"
+        return f"https://{self.bucket_name}.adacrd.in"
+
+    def url_for(self, endpoint: str, version: str = "v1") -> str:
+        """Return the absolute URL to the endpoint for the given API version."""
+        return urllib.parse.urljoin(self.base_path, f"{version}/{endpoint}")
 
 
 class User(ApiClient):
     def create(self, email: str, password: str):
         data = {"email": email, "password": password}
-        self.client.post(self.url_for("/users"), json=data, auth=False)
+        url = self.url_for("/users")
+        self.client.post(url, json=data, auth=False)
 
     def login(self, email: str, password: str) -> Dict[str, Any]:
         data = {"email": email, "password": password}
-        response = self.client.post(
-            self.url_for("/users/token"), json=data, auth=False
-        )
+        url = self.url_for("/users/token")
+        response = self.client.post(url, json=data, auth=False)
         return response.json()
 
 
-class Bucket:
-    def __init__(self, client: requests.Session):
-        self.client = client
-
+class Buckets(ApiClient):
     def create(self, description: str, schemaless: bool):
         data = {"description": description, "schemaless": schemaless}
-        response = self.client.post("/buckets", json=data)
+        url = self.url_for("/buckets")
+        response = self.client.post(url, json=data)
         return response.json()
 
-    def _bucket_from_payload(self, bucket_payload: Dict[str, Any]) -> "Bucket":
-        return Bucket(bucket_name=bucket_payload["name"], client=self.client)
+    def _bucket_from_payload(
+        self, bucket_payload: Dict[str, Any]
+    ) -> Union["Bucket", List["Bucket"]]:
+        bucket_args = BucketArgs(**bucket_payload)
+        return Bucket(bucket_args, client=self.client, buckets_router=self)
 
     # TODO: get by name as well
     def get(self, bucket: str = None) -> Union["Bucket", List["Bucket"]]:
@@ -127,28 +138,34 @@ class Bucket:
         url = self.url_for(endpoint)
         response = self.client.get(url)
         bucket_payload = response.json()
-        if not isinstance(bucket_payload, list):
-            bucket_payload = [bucket_payload]
 
-        return [
-            self._bucket_from_payload(payload) for payload in bucket_payload
-        ]
+        if bucket:
+            return self._bucket_from_payload(bucket_payload)
+        else:
+            return [
+                self._bucket_from_payload(payload)
+                for payload in bucket_payload
+            ]
 
     def delete(self, bucket: str) -> Dict[str, Any]:
-        response = self.client.delete(f"/buckets/{bucket}")
+        url = self.url_for(f"/buckets/{bucket}")
+        response = self.client.delete(url)
         return response.json()
 
     def create_token(self, bucket: str, description: str = None):
         data = {"description": description}
-        response = self.client.post(f"/buckets/{bucket}/tokens", json=data)
+        url = self.url_for(f"/buckets/{bucket}/tokens")
+        response = self.client.post(url, json=data)
         return response.json()
 
     def get_tokens(self, bucket: str):
-        response = self.client.get(f"/buckets/{bucket}/tokens")
+        url = self.url_for(f"/buckets/{bucket}/tokens")
+        response = self.client.get(url)
         return response.json()
 
     def delete_token(self, bucket: str, token_uuid: str):
-        response = self.client.delete(f"/buckets/{bucket}/tokens/{token_uuid}")
+        url = self.url_for(f"/buckets/{bucket}/tokens/{token_uuid}")
+        response = self.client.delete(url)
         return response.json()
 
 
@@ -175,16 +192,16 @@ class Bucket(AdacrdClient):
         self._buckets_router = buckets_router
 
     def delete(self) -> Dict[str, Any]:
-        return self._buckets_router.delete(self.bucket_name)
+        return self._buckets_router.delete(self.uuid)
 
     def create_token(self, description: str = None) -> Dict[str, Any]:
-        return self._buckets_router.create_token(self.bucket_name, description)
+        return self._buckets_router.create_token(self.uuid, description)
 
     def get_tokens(self) -> List[Dict[str, Any]]:
-        return self._buckets_router.get_tokens(self.bucket_name)
+        return self._buckets_router.get_tokens(self.uuid)
 
     def delete_token(self, token_uuid: str) -> Dict[str, Any]:
-        return self._buckets_router.delete_token(self.bucket_name, token_uuid)
+        return self._buckets_router.delete_token(self.uuid, token_uuid)
 
     def query(self, query: str) -> List[Dict[str, Any]]:
         data = {"query": query}
@@ -202,6 +219,8 @@ class Bucket(AdacrdClient):
 
 
 class AdacordApi:
+    """A facade to the Adacord API"""
+
     def __init__(self, client: HTTPClient = None):
         self.client = client or HTTPClient(auth=AccessTokenAuth(get_token))
 
@@ -213,24 +232,19 @@ class AdacordApi:
     def Buckets(self) -> Buckets:
         return Buckets(self.client)
 
-    def Bucket(self, bucket_name: str) -> Bucket:
-        bucket_payload = self.Buckets.get(bucket_name)
-        return Bucket(
-            bucket_payload,
-            client=self.client,
-            buckets_router=self.Buckets,
-        )
+    def Bucket(self, bucket_uuid: str) -> Bucket:
+        return self.Buckets.get(bucket_uuid)
 
     @classmethod
     def Client(cls, token: str) -> "AdacordApi":
         client = HTTPClient.with_token(token)
         return cls(client)
 
-    def create_bucket(self, description: str) -> Bucket:
-        return self.Buckets.create(description)
+    def create_bucket(self, description: str, schemaless: bool) -> Bucket:
+        return self.Buckets.create(description, schemaless)
 
-    def get_bucket(self, bucket_name: str) -> Bucket:
-        return self.Buckets.get(bucket_name)
+    def get_bucket(self, bucket_uuid: str) -> Bucket:
+        return self.Buckets.get(bucket_uuid)
 
 
 def create_api() -> AdacordApi:
