@@ -1,7 +1,7 @@
 import typer
 from tabulate import tabulate
 
-from .api import api
+from .api import create_api
 from .exceptions import cli_wrapper
 
 app = typer.Typer()
@@ -23,7 +23,8 @@ def create_bucket(
     """
     Create a new bucket.
     """
-    payload = api.bucket.create(description, schemaless=schemaless)
+    api = create_api()
+    payload = api.Buckets.create(description, schemaless=schemaless)
     typer.echo(
         typer.style(
             "Bucket created, you can start sending data 🚀",
@@ -32,7 +33,7 @@ def create_bucket(
         )
     )
     first_row = ("uuid", "name", "description", "url")
-    values = [payload[entry] for entry in first_row]
+    values = [getattr(payload, entry) for entry in first_row]
     first_row = ("ID", "Description", "URL")
     typer.echo(
         tabulate(
@@ -43,12 +44,13 @@ def create_bucket(
 
 @app.command("list")
 @cli_wrapper
-def list_bucket():
+def list_buckets():
     """
     Get a list of your buckets.
     """
-    payload = api.bucket.get()
-    first_row = ("uuid", "description", "url", "schemaless")
+    api = create_api()
+    payload = api.Buckets.list()
+    first_row = ("uuid", "description", "url")
 
     if not payload:
         typer.echo(
@@ -60,7 +62,7 @@ def list_bucket():
 
     rows = []
     for index, row in enumerate(payload, 1):
-        rows.append([index, *[row[entry] for entry in first_row]])
+        rows.append([index, *[getattr(row, entry) for entry in first_row]])
 
     first_row = ("ID", "Description", "URL", "Schemaless")
     first_row = ("", *first_row)
@@ -75,7 +77,8 @@ def delete_bucket(bucket: str):
     """
     Delete a bucket.
     """
-    api.bucket.delete(bucket)
+    api = create_api()
+    api.Buckets.delete(bucket)
     typer.echo(
         typer.style(
             f"Bucket {bucket} deleted.", fg=typer.colors.WHITE, bold=True
@@ -85,11 +88,13 @@ def delete_bucket(bucket: str):
 
 @app.command("query")
 @cli_wrapper
-def query_bucket(bucket_name: str, query: str = typer.Option(...)):
+def query_bucket(bucket_uuid: str, query: str = typer.Option(...)):
     """
     Query a bucket using a SQL query.
     """
-    payload = api.adacrd.query(bucket_name, query)
+    api = create_api()
+    client = api.Bucket(bucket_uuid)
+    payload = client.query(query)
     for row in payload:
         typer.echo(row)
 
@@ -105,7 +110,9 @@ def create_token(
     """
     Create a new API Token.
     """
-    payload = api.bucket.create_token(bucket, description)
+    api = create_api()
+    client = api.Bucket(bucket)
+    payload = client.create_token(description)
     typer.echo(
         typer.style(
             "API Token created.",
@@ -132,15 +139,13 @@ def create_token(
 
 @token_app.command("list")
 @cli_wrapper
-def list_tokens(
-    bucket: str = typer.Argument(
-        ..., help="The bucket uuid you want to give access to."
-    )
-):
+def list_tokens(bucket: str = typer.Argument(..., help="The bucket uuid.")):
     """
     Get your tokens.
     """
-    tokens = api.bucket.get_tokens(bucket)
+    api = create_api()
+    client = api.Bucket(bucket)
+    tokens = client.get_tokens()
     first_row = ("uuid", "token", "description", "created_on")
     if not tokens:
         typer.echo(
@@ -165,13 +170,17 @@ def list_tokens(
 
 @token_app.command("delete")
 @cli_wrapper
-def delete_token(bucket: str, token: str):
+def delete_token(bucket_uuid: str, token_uuid: str):
     """
     Delete an API Token.
     """
-    api.bucket.delete_token(bucket, token)
+    api = create_api()
+    client = api.Bucket(bucket_uuid)
+    client.delete_token(token_uuid=token_uuid)
     typer.echo(
         typer.style(
-            f"API Token {token} deleted.", fg=typer.colors.WHITE, bold=True
+            f"API Token {token_uuid} deleted.",
+            fg=typer.colors.WHITE,
+            bold=True,
         )
     )
