@@ -23,7 +23,7 @@ bucket_url: str = bucket.url
 data: List[Dict[str, Any]] = bucket.query("SELECT * FROM bucket-name")
 
 # push data to the bucket
-response = bucket.insert_rows({"hello": "ciao"})
+response = bucket.push({"hello": "ciao"})
 
 # fetch the whole data of a bucket
 rows: List[Dict[str, Any]] = bucket.fetch_all()

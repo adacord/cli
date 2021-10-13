@@ -349,12 +349,12 @@ class TestBucket:
             response = bucket_client.query("select * from my-bucket")
             assert response == data
 
-    def test_insert_rows(self, bucket_client):
+    def test_push(self, bucket_client):
         rows = {"timestamp": "42", "data": []}
         data = {"result": []}
         with requests_mock.Mocker() as mock:
             mock.post("https://buckety.adacrd.in/v1/", json=data)
-            response = bucket_client.insert_rows(rows)
+            response = bucket_client.push(rows)
             assert response == data
 
     def test_fetch_all(self, bucket_client):

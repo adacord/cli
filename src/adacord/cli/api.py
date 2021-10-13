@@ -208,7 +208,7 @@ class Bucket(AdacrdClient):
         response = self.client.post(self.url_for("/query"), json=data)
         return response.json()
 
-    def insert_rows(self, rows: List[Dict[str, Any]]):
+    def push(self, rows: List[Dict[str, Any]]):
         data = {"data": rows}
         response = self.client.post(self.url_for("/"), json=data)
         return response.json()
