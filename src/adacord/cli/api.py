@@ -86,7 +86,8 @@ class ApiClient:
 
     def url_for(self, endpoint: str, version: str = "v1") -> str:
         """Return the absolute URL to the endpoint for the given API version."""
-        return urllib.parse.urljoin(self.base_path, f"{version}/{endpoint}")
+        suffix = f"{version}/{endpoint}" if endpoint else version
+        return urllib.parse.urljoin(self.base_path, suffix)
 
 
 class AdacrdClient:
@@ -102,7 +103,8 @@ class AdacrdClient:
 
     def url_for(self, endpoint: str, version: str = "v1") -> str:
         """Return the absolute URL to the endpoint for the given API version."""
-        return urllib.parse.urljoin(self.base_path, f"{version}/{endpoint}")
+        suffix = f"{version}/{endpoint}" if endpoint else version
+        return urllib.parse.urljoin(self.base_path, suffix)
 
 
 class User(ApiClient):
@@ -191,6 +193,7 @@ class Bucket(AdacrdClient):
         self.name = bucket_payload.name
         self.description = bucket_payload.description
         self.url = bucket_payload.url
+        self.schemaless = bucket_payload.schemaless
         self._buckets_router = buckets_router
 
     def delete(self) -> Dict[str, Any]:
@@ -212,11 +215,11 @@ class Bucket(AdacrdClient):
 
     def push(self, rows: List[Dict[str, Any]]):
         data = {"data": rows}
-        response = self.client.post(self.url_for("/"), json=data)
+        response = self.client.post(self.url_for(""), json=data)
         return response.json()
 
     def fetch_all(self) -> List[Dict[str, Any]]:
-        response = self.client.get(self.url_for("/"))
+        response = self.client.get(self.url_for(""))
         return response.json()
 
 

@@ -158,35 +158,35 @@ class TestUser:
             assert response
 
 
+@pytest.fixture
+def fake_bucket_data():
+    return {
+        "uuid": "123",
+        "name": "buckety",
+        "url": "https://your-bucket.ada.in",
+        "schemaless": "false",
+        "description": "fake bucket",
+    }
+
+
 class TestBuckets:
     """Test the endpoints that deal with buckets"""
 
-    def test_create(self, api):
+    def test_create(self, api, fake_bucket_data):
         client = api.Buckets
-        data = {
-            "uuid": "123",
-            "name": {},
-            "url": "https://your-bucket.ada.in",
-            "description": "",
-        }
         with requests_mock.Mocker() as mock:
-            mock.post("https://api.adacord.com/v1/buckets", json=data)
+            mock.post(
+                "https://api.adacord.com/v1/buckets", json=fake_bucket_data
+            )
             response = client.create("123", schemaless=False)
             assert response
-            assert response == data
+            assert response == fake_bucket_data
 
-    def test_list(self, api):
+    def test_list(self, api, fake_bucket_data):
         client = api.Buckets
-        data = [
-            {
-                "uuid": "123",
-                "name": {},
-                "url": "https://your-bucket.ada.in",
-                "description": "",
-            }
-        ]
+        data = [fake_bucket_data]
         with requests_mock.Mocker() as mock:
-            mock.get("https://api.adacord.com/v1/buckets/", json=data)
+            mock.get("https://api.adacord.com/v1/buckets", json=data)
             response = client.list()
             assert response
             assert response[0].uuid == data[0]["uuid"]
@@ -194,62 +194,52 @@ class TestBuckets:
             assert response[0].url == data[0]["url"]
             assert response[0].description == data[0]["description"]
 
-    def test_get_single(self, api):
+    def test_get_single(self, api, fake_bucket_data):
         client = api.Buckets
-        data = {
-            "uuid": "123",
-            "name": {},
-            "url": "https://your-bucket.ada.in",
-            "description": "",
-        }
         with requests_mock.Mocker() as mock:
-            mock.get("https://api.adacord.com/v1/buckets/123", json=data)
+            mock.get(
+                "https://api.adacord.com/v1/buckets/123", json=fake_bucket_data
+            )
             response = client.get("123")
             assert response
 
-    def test_delete(self, api):
+    def test_delete(self, api, fake_bucket_data):
         client = api.Buckets
-        data = {
-            "uuid": "123",
-            "name": {},
-            "url": "https://your-bucket.ada.in",
-            "description": "",
-        }
         with requests_mock.Mocker() as mock:
-            mock.delete("https://api.adacord.com/v1/buckets/123", json=data)
+            mock.delete(
+                "https://api.adacord.com/v1/buckets/123", json=fake_bucket_data
+            )
             response = client.delete("123")
             assert response
+
+
+@pytest.fixture
+def fake_token_data():
+    return {
+        "uuid": "8901",
+        "created_on": {},
+        "token": "tEsTtOkEn",
+        "description": "",
+    }
 
 
 class TestAPITokens:
     """Test the endpoints that deal with user-managed tokens"""
 
-    def test_create_token(self, api):
+    def test_create_token(self, api, fake_token_data):
         client = api.Buckets
-        data = {
-            "uuid": "8901",
-            "created_on": {},
-            "token": "tEsTtOkEn",
-            "description": "",
-        }
         with requests_mock.Mocker() as mock:
             mock.post(
-                "https://api.adacord.com/v1/buckets/123/tokens", json=data
+                "https://api.adacord.com/v1/buckets/123/tokens",
+                json=fake_token_data,
             )
             response = client.create_token(bucket="123", description="")
             assert response
-            assert response == data
+            assert response == fake_token_data
 
-    def test_get_tokens(self, api):
+    def test_get_tokens(self, api, fake_token_data):
         client = api.Buckets
-        data = [
-            {
-                "uuid": "8901",
-                "created_on": {},
-                "token": "tEsTtOkEn",
-                "description": "",
-            }
-        ]
+        data = [fake_token_data]
         with requests_mock.Mocker() as mock:
             mock.get(
                 "https://api.adacord.com/v1/buckets/123/tokens", json=data
@@ -258,35 +248,24 @@ class TestAPITokens:
             assert response
             assert response == data
 
-    def test_delete_token(self, api):
+    def test_delete_token(self, api, fake_token_data):
         client = api.Buckets
-        data = [
-            {
-                "uuid": "8901",
-                "created_on": {},
-                "token": "tEsTtOkEn",
-                "description": "",
-            }
-        ]
         with requests_mock.Mocker() as mock:
             mock.delete(
-                "https://api.adacord.com/v1/buckets/123/tokens/8901", json=data
+                "https://api.adacord.com/v1/buckets/123/tokens/8901",
+                json=fake_token_data,
             )
             response = client.delete_token(bucket="123", token_uuid="8901")
             assert response
-            assert response == data
+            assert response == fake_token_data
 
 
 @pytest.fixture
-def bucket_client(api) -> Bucket:
-    bucket = {
-        "uuid": "123",
-        "name": "buckety",
-        "url": "https://your-bucket.ada.in",
-        "description": "",
-    }
+def bucket_client(api, fake_bucket_data) -> Bucket:
     with requests_mock.Mocker() as mock:
-        mock.get("https://api.adacord.com/v1/buckets/123", json=bucket)
+        mock.get(
+            "https://api.adacord.com/v1/buckets/123", json=fake_bucket_data
+        )
         client = api.Bucket("123")
         yield client
 
@@ -294,15 +273,11 @@ def bucket_client(api) -> Bucket:
 class TestBucket:
     """Test the endpoints that deal with bucket data"""
 
-    def test_get(self, api):
-        data = {
-            "uuid": "123",
-            "name": "buckety",
-            "url": "https://your-bucket.ada.in",
-            "description": "test",
-        }
+    def test_get(self, api, fake_bucket_data):
         with requests_mock.Mocker() as mock:
-            mock.get("https://api.adacord.com/v1/buckets/123", json=data)
+            mock.get(
+                "https://api.adacord.com/v1/buckets/123", json=fake_bucket_data
+            )
             response = api.Bucket("123")
             assert response
             assert response.uuid
@@ -317,29 +292,17 @@ class TestBucket:
             response = bucket_client.delete()
             assert response == data
 
-    def test_create_token(self, bucket_client):
-        data = {
-            "uuid": "8901",
-            "created_on": {},
-            "token": "tEsTtOkEn",
-            "description": "",
-        }
+    def test_create_token(self, bucket_client, fake_token_data):
         with requests_mock.Mocker() as mock:
             mock.post(
-                "https://api.adacord.com/v1/buckets/123/tokens", json=data
+                "https://api.adacord.com/v1/buckets/123/tokens",
+                json=fake_token_data,
             )
             response = bucket_client.create_token(description="")
-            assert response == data
+            assert response == fake_token_data
 
-    def test_get_tokens(self, bucket_client):
-        data = [
-            {
-                "uuid": "8901",
-                "created_on": {},
-                "token": "tEsTtOkEn",
-                "description": "",
-            }
-        ]
+    def test_get_tokens(self, bucket_client, fake_token_data):
+        data = [fake_token_data]
         with requests_mock.Mocker() as mock:
             mock.get(
                 "https://api.adacord.com/v1/buckets/123/tokens", json=data
@@ -347,21 +310,14 @@ class TestBucket:
             response = bucket_client.get_tokens()
             assert response == data
 
-    def test_delete_token(self, bucket_client):
-        data = [
-            {
-                "uuid": "8901",
-                "created_on": {},
-                "token": "tEsTtOkEn",
-                "description": "",
-            }
-        ]
+    def test_delete_token(self, bucket_client, fake_token_data):
         with requests_mock.Mocker() as mock:
             mock.delete(
-                "https://api.adacord.com/v1/buckets/123/tokens/8901", json=data
+                "https://api.adacord.com/v1/buckets/123/tokens/8901",
+                json=fake_token_data,
             )
             response = bucket_client.delete_token(token_uuid="8901")
-            assert response == data
+            assert response == fake_token_data
 
     def test_query(self, bucket_client):
         data = {"query": "", "result": []}
@@ -374,14 +330,14 @@ class TestBucket:
         rows = {"timestamp": "42", "data": []}
         data = {"result": []}
         with requests_mock.Mocker() as mock:
-            mock.post("https://buckety.adacrd.in/v1/", json=data)
+            mock.post("https://buckety.adacrd.in/v1", json=data)
             response = bucket_client.push(rows)
             assert response == data
 
     def test_fetch_all(self, bucket_client):
         data = {"result": []}
         with requests_mock.Mocker() as mock:
-            mock.get("https://buckety.adacrd.in/v1/", json=data)
+            mock.get("https://buckety.adacrd.in/v1", json=data)
             response = bucket_client.fetch_all()
             assert response == data
 
@@ -394,44 +350,29 @@ class TestAdacordApi:
         assert api
         assert api.client
 
-    def test_create_bucket(self, api):
-        data = {
-            "uuid": "123",
-            "name": {},
-            "url": "https://your-bucket.ada.in",
-            "description": "",
-        }
+    def test_create_bucket(self, api, fake_bucket_data):
         with requests_mock.Mocker() as mock:
-            mock.post("https://api.adacord.com/v1/buckets", json=data)
+            mock.post(
+                "https://api.adacord.com/v1/buckets", json=fake_bucket_data
+            )
             response = api.create_bucket(description="", schemaless=False)
             assert response
-            assert response == data
+            assert response == fake_bucket_data
 
-    def test_get_bucket(self, api):
-        data = {
-            "uuid": "123",
-            "name": {},
-            "url": "https://your-bucket.ada.in",
-            "description": "",
-        }
+    def test_get_bucket(self, api, fake_bucket_data):
         with requests_mock.Mocker() as mock:
-            mock.get("https://api.adacord.com/v1/buckets/123", json=data)
+            mock.get(
+                "https://api.adacord.com/v1/buckets/123", json=fake_bucket_data
+            )
             response = api.get_bucket(bucket_uuid="123")
             assert response
-            assert response.uuid == data["uuid"]
-            assert response.name == data["name"]
-            assert response.description == data["description"]
-            assert response.url == data["url"]
+            assert response.uuid == fake_bucket_data["uuid"]
+            assert response.name == fake_bucket_data["name"]
+            assert response.description == fake_bucket_data["description"]
+            assert response.url == fake_bucket_data["url"]
 
-    def test_http_client(self):
-        data = [
-            {
-                "uuid": "123",
-                "name": {},
-                "url": "https://your-bucket.ada.in",
-                "description": "",
-            }
-        ]
+    def test_http_client(self, fake_bucket_data):
+        data = [fake_bucket_data]
 
         def callback(request, context):
             assert "Authorization" in request.headers
@@ -439,5 +380,5 @@ class TestAdacordApi:
 
         api = AdacordApi.Client(token="1234")
         with requests_mock.Mocker() as mock:
-            mock.get("https://api.adacord.com/v1/buckets/", text=callback)
+            mock.get("https://api.adacord.com/v1/buckets", text=callback)
             api.Buckets.list()
