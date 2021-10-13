@@ -19,11 +19,13 @@ class AccessTokenAuth(AuthBase):
         self._token = None
 
     def get_token(self):
+
         if not self._token:
             self._token = self._token_getter()
         return self._token
 
     def __call__(self, request):
+
         request.headers["Authorization"] = f"Bearer {self.get_token()}"
         return request
 
@@ -130,7 +132,7 @@ class Buckets(ApiClient):
         return Bucket(bucket_args, client=self.client, buckets_router=self)
 
     def list(self) -> List["Bucket"]:
-        endpoint = "/buckets/"
+        endpoint = "/buckets"
         url = self.url_for(endpoint)
         response = self.client.get(url)
         bucket_payload = response.json()
@@ -174,6 +176,7 @@ class BucketArgs:
     name: str
     description: str
     url: str
+    schemaless: bool
 
 
 class Bucket(AdacrdClient):

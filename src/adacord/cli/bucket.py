@@ -50,7 +50,7 @@ def list_buckets():
     """
     api = create_api()
     payload = api.Buckets.list()
-    first_row = ("uuid", "description", "url", "schemaless")
+    first_row = ("uuid", "description", "url")
 
     if not payload:
         typer.echo(
@@ -62,7 +62,7 @@ def list_buckets():
 
     rows = []
     for index, row in enumerate(payload, 1):
-        rows.append([index, *[row[entry] for entry in first_row]])
+        rows.append([index, *[getattr(row, entry) for entry in first_row]])
 
     first_row = ("ID", "Description", "URL", "Schemaless")
     first_row = ("", *first_row)
