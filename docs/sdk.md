@@ -8,13 +8,10 @@ from adacord import api, settings
 ada = api.AdacordApi.Client(token=settings.token)
 
 # create a bucket
-bucket: Bucket = ada.create_bucket()
+bucket: Bucket = ada.create_bucket(description="my-bucket", schemaless=False)
 
 # get an existing bucket from uuid
-bucket: Bucket = ada.get_bucket(uuid=bucket_uuid)
-
-# get an existing bucket from bucket name
-bucket: Bucket = ada.get_bucket(name=bucket_name)
+bucket: Bucket = ada.get_bucket(uuid=bucket.uuid)
 
 # get the bucket name
 bucket_name: str = bucket.name
@@ -26,13 +23,10 @@ bucket_url: str = bucket.url
 data: List[Dict[str, Any]] = bucket.query("SELECT * FROM bucket-name")
 
 # push data to the bucket
-response = bucket.push({"hello": "ciao"})
-
-# upload a file to the bucket
-response = bucket.upload(path=path_to_file)
+response = bucket.insert_rows({"hello": "ciao"})
 
 # fetch the whole data of a bucket
-data: List[Dict[str, Any]] = bucket.all()
+rows: List[Dict[str, Any]] = bucket.fetch_all()
 
 # delete the bucket
 response = bucket.delete()
