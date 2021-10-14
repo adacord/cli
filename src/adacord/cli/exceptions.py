@@ -30,7 +30,7 @@ def cli_wrapper(func):
         except json.JSONDecodeError:
             typer.echo(
                 typer.style(
-                    "Ouch.... something bad happed :/",
+                    "Ouch.... something bad happened :/",
                     fg=typer.colors.RED,
                     bold=True,
                 )
