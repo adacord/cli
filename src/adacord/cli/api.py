@@ -135,18 +135,18 @@ class User(ApiClient):
 
 
 class Buckets(ApiClient):
-    def create(self, description: str, schemaless: bool):
-        data = {"description": description, "schemaless": schemaless}
-        url = self.url_for("/buckets")
-        response = self.client.post(url, json=data)
-        bucket_payload = response.json()
-        return self._bucket_from_payload(bucket_payload)
-
     def _bucket_from_payload(
         self, bucket_payload: Dict[str, Any]
     ) -> Union["Bucket", List["Bucket"]]:
         bucket_args = BucketArgs(**bucket_payload)
         return Bucket(bucket_args, client=self.client, buckets_router=self)
+
+    def create(self, description: str, schemaless: bool) -> "Bucket":
+        data = {"description": description, "schemaless": schemaless}
+        url = self.url_for("/buckets")
+        response = self.client.post(url, json=data)
+        bucket_payload = response.json()
+        return self._bucket_from_payload(bucket_payload)
 
     def list(self) -> List["Bucket"]:
         endpoint = "/buckets"
