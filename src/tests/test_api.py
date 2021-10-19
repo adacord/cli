@@ -130,7 +130,6 @@ class TestUser:
     """Test the endpoints that deal with users"""
 
     def test_create(self, api):
-        client = api.User
         data = {
             "uid": "123456",
             "display_name": "fake user",
@@ -141,10 +140,9 @@ class TestUser:
         }
         with requests_mock.Mocker() as mock:
             mock.post("https://api.adacord.com/v1/users", json=data)
-            client.create("email", "password")
+            api.User.create("email", "password")
 
     def test_login(self, api):
-        client = api.User
         data = {
             "access_token": "",
             "refresh_token": "",
@@ -153,35 +151,33 @@ class TestUser:
         }
         with requests_mock.Mocker() as mock:
             mock.post("https://api.adacord.com/v1/users/token", json=data)
-            response = client.login("email", "password")
+            response = api.User.login("email", "password")
             assert response
 
     def test_request_password_reset(self, api):
-        client = api.User
         data = {"message": "ok"}
         with requests_mock.Mocker() as mock:
             mock.post(
                 "https://api.adacord.com/v1/users/password_reset", json=data
             )
-            response = client.request_password_reset("email")
+            response = api.User.request_password_reset("email")
             assert response
 
     def test_request_verification_email(self, api):
-        client = api.User
         data = {"message": "ok"}
         with requests_mock.Mocker() as mock:
             mock.post(
                 "https://api.adacord.com/v1/users/verification_email",
                 json=data,
             )
-            response = client.request_verification_email("email", "password")
+            response = api.User.request_verification_email("email", "password")
             assert response
 
 
 class TestBuckets:
     """Test API interface that deal with buckets"""
 
-    def test_create_bucket(self, api, fake_bucket_data):
+    def test_buckets__create(self, api, fake_bucket_data):
         with requests_mock.Mocker() as mock:
             mock.post(
                 "https://api.adacord.com/v1/buckets", json=fake_bucket_data
@@ -192,7 +188,7 @@ class TestBuckets:
             assert bucket.url == fake_bucket_data["url"]
             assert bucket.description == fake_bucket_data["description"]
 
-    def test_list(self, api, fake_bucket_data):
+    def test_buckets__list(self, api, fake_bucket_data):
         data = [fake_bucket_data]
         with requests_mock.Mocker() as mock:
             mock.get("https://api.adacord.com/v1/buckets", json=data)
@@ -202,7 +198,7 @@ class TestBuckets:
             assert response[0].url == data[0]["url"]
             assert response[0].description == data[0]["description"]
 
-    def test_get_single(self, api, fake_bucket_data):
+    def test_buckets__get(self, api, fake_bucket_data):
         with requests_mock.Mocker() as mock:
             mock.get(
                 "https://api.adacord.com/v1/buckets/123", json=fake_bucket_data
@@ -210,7 +206,7 @@ class TestBuckets:
             response = api.Buckets.get("123")
             assert response
 
-    def test_delete(self, api, fake_bucket_data):
+    def test_buckets__delete(self, api, fake_bucket_data):
         with requests_mock.Mocker() as mock:
             mock.delete(
                 "https://api.adacord.com/v1/buckets/123", json=fake_bucket_data
@@ -218,11 +214,40 @@ class TestBuckets:
             response = api.Buckets.delete("123")
             assert response
 
+    def test_buckets__create_token(self, api, fake_token_data):
+        with requests_mock.Mocker() as mock:
+            mock.post(
+                "https://api.adacord.com/v1/buckets/123/tokens",
+                json=fake_token_data,
+            )
+            response = api.Buckets.create_token(bucket="123", description="")
+            assert response == fake_token_data
+
+    def test_buckets__get_tokens(self, api, fake_token_data):
+        data = [fake_token_data]
+        with requests_mock.Mocker() as mock:
+            mock.get(
+                "https://api.adacord.com/v1/buckets/123/tokens", json=data
+            )
+            response = api.Buckets.get_tokens(bucket="123")
+            assert response == data
+
+    def test_buckets__delete_token(self, api, fake_token_data):
+        with requests_mock.Mocker() as mock:
+            mock.delete(
+                "https://api.adacord.com/v1/buckets/123/tokens/8901",
+                json=fake_token_data,
+            )
+            response = api.Buckets.delete_token(
+                bucket="123", token_uuid="8901"
+            )
+            assert response == fake_token_data
+
 
 class TestBucket:
     """Test API interface that deal with a SINGLE bucket"""
 
-    def test_get_bucket(self, api, fake_bucket_data):
+    def test_bucket__get(self, api, fake_bucket_data):
         with requests_mock.Mocker() as mock:
             mock.get(
                 "https://api.adacord.com/v1/buckets/123", json=fake_bucket_data
@@ -234,14 +259,14 @@ class TestBucket:
             assert response.description
             assert response.url
 
-    def test_delete_bucket(self, bucket_client):
+    def test_bucket__delete(self, bucket_client):
         data = {"uuid": "123"}
         with requests_mock.Mocker() as mock:
             mock.delete("https://api.adacord.com/v1/buckets/123", json=data)
             response = bucket_client.delete()
             assert response == data
 
-    def test_create_token(self, bucket_client, fake_token_data):
+    def test_bucket__create_token(self, bucket_client, fake_token_data):
         with requests_mock.Mocker() as mock:
             mock.post(
                 "https://api.adacord.com/v1/buckets/123/tokens",
@@ -250,7 +275,7 @@ class TestBucket:
             response = bucket_client.create_token(description="")
             assert response == fake_token_data
 
-    def test_get_tokens(self, bucket_client, fake_token_data):
+    def test_bucket__get_tokens(self, bucket_client, fake_token_data):
         data = [fake_token_data]
         with requests_mock.Mocker() as mock:
             mock.get(
@@ -259,7 +284,7 @@ class TestBucket:
             response = bucket_client.get_tokens()
             assert response == data
 
-    def test_delete_token(self, bucket_client, fake_token_data):
+    def test_bucket__delete_token(self, bucket_client, fake_token_data):
         with requests_mock.Mocker() as mock:
             mock.delete(
                 "https://api.adacord.com/v1/buckets/123/tokens/8901",
@@ -268,14 +293,14 @@ class TestBucket:
             response = bucket_client.delete_token(token_uuid="8901")
             assert response == fake_token_data
 
-    def test_query_data(self, bucket_client):
+    def test_bucket__query(self, bucket_client):
         data = {"query": "", "result": []}
         with requests_mock.Mocker() as mock:
             mock.post("https://buckety.adacrd.in/v1/query", json=data)
             response = bucket_client.query("select * from my-bucket")
             assert response == data
 
-    def test_push_data(self, bucket_client):
+    def test_bucket__push(self, bucket_client):
         rows = {"timestamp": "42", "data": []}
         data = {"result": []}
         with requests_mock.Mocker() as mock:
@@ -283,46 +308,12 @@ class TestBucket:
             response = bucket_client.push(rows)
             assert response == data
 
-    def test_fetch_all_data(self, bucket_client):
+    def test_bucket__fetch_all(self, bucket_client):
         data = {"result": []}
         with requests_mock.Mocker() as mock:
             mock.get("https://buckety.adacrd.in/v1", json=data)
             response = bucket_client.fetch_all()
             assert response == data
-
-
-class TestAPITokens:
-    """Test API interface that deal with user-managed tokens"""
-
-    def test_create_token(self, api, fake_token_data):
-        with requests_mock.Mocker() as mock:
-            mock.post(
-                "https://api.adacord.com/v1/buckets/123/tokens",
-                json=fake_token_data,
-            )
-            response = api.Buckets.create_token(bucket="123", description="")
-            assert response == fake_token_data
-
-    def test_get_tokens(self, api, fake_token_data):
-        client = api.Buckets
-        data = [fake_token_data]
-        with requests_mock.Mocker() as mock:
-            mock.get(
-                "https://api.adacord.com/v1/buckets/123/tokens", json=data
-            )
-            response = client.get_tokens(bucket="123")
-            assert response == data
-
-    def test_delete_token(self, api, fake_token_data):
-        with requests_mock.Mocker() as mock:
-            mock.delete(
-                "https://api.adacord.com/v1/buckets/123/tokens/8901",
-                json=fake_token_data,
-            )
-            response = api.Buckets.delete_token(
-                bucket="123", token_uuid="8901"
-            )
-            assert response == fake_token_data
 
 
 class TestAdacordApi:
