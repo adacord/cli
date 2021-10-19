@@ -139,7 +139,8 @@ class Buckets(ApiClient):
         data = {"description": description, "schemaless": schemaless}
         url = self.url_for("/buckets")
         response = self.client.post(url, json=data)
-        return response.json()
+        bucket_payload = response.json()
+        return self._bucket_from_payload(bucket_payload)
 
     def _bucket_from_payload(
         self, bucket_payload: Dict[str, Any]
