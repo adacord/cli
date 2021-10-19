@@ -319,7 +319,9 @@ class TestAPITokens:
                 "https://api.adacord.com/v1/buckets/123/tokens/8901",
                 json=fake_token_data,
             )
-            response = api.Buckets.delete_token(bucket="123", token_uuid="8901")
+            response = api.Buckets.delete_token(
+                bucket="123", token_uuid="8901"
+            )
             assert response == fake_token_data
 
 
