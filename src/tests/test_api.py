@@ -268,14 +268,14 @@ class TestBucket:
             response = bucket_client.delete_token(token_uuid="8901")
             assert response == fake_token_data
 
-    def test_query(self, bucket_client):
+    def test_query_data(self, bucket_client):
         data = {"query": "", "result": []}
         with requests_mock.Mocker() as mock:
             mock.post("https://buckety.adacrd.in/v1/query", json=data)
             response = bucket_client.query("select * from my-bucket")
             assert response == data
 
-    def test_push(self, bucket_client):
+    def test_push_data(self, bucket_client):
         rows = {"timestamp": "42", "data": []}
         data = {"result": []}
         with requests_mock.Mocker() as mock:
@@ -283,7 +283,7 @@ class TestBucket:
             response = bucket_client.push(rows)
             assert response == data
 
-    def test_fetch_all(self, bucket_client):
+    def test_fetch_all_data(self, bucket_client):
         data = {"result": []}
         with requests_mock.Mocker() as mock:
             mock.get("https://buckety.adacrd.in/v1", json=data)
@@ -295,14 +295,12 @@ class TestAPITokens:
     """Test API interface that deal with user-managed tokens"""
 
     def test_create_token(self, api, fake_token_data):
-        client = api.Buckets
         with requests_mock.Mocker() as mock:
             mock.post(
                 "https://api.adacord.com/v1/buckets/123/tokens",
                 json=fake_token_data,
             )
-            response = client.create_token(bucket="123", description="")
-            assert response
+            response = api.Buckets.create_token(bucket="123", description="")
             assert response == fake_token_data
 
     def test_get_tokens(self, api, fake_token_data):
@@ -316,13 +314,12 @@ class TestAPITokens:
             assert response == data
 
     def test_delete_token(self, api, fake_token_data):
-        client = api.Buckets
         with requests_mock.Mocker() as mock:
             mock.delete(
                 "https://api.adacord.com/v1/buckets/123/tokens/8901",
                 json=fake_token_data,
             )
-            response = client.delete_token(bucket="123", token_uuid="8901")
+            response = api.Buckets.delete_token(bucket="123", token_uuid="8901")
             assert response == fake_token_data
 
 
