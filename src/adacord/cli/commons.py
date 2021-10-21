@@ -1,4 +1,6 @@
+import csv
 import json
+from typing import Any, Dict, List
 from pathlib import Path
 
 CONFIG_FOLDER_PATH = Path.home() / ".adacord"
@@ -18,3 +20,14 @@ def read_auth(base_path=CONFIG_FOLDER_PATH):
 def get_token(base_path=CONFIG_FOLDER_PATH):
     auth = read_auth(base_path)
     return auth["token"]
+
+
+def parse_csv(filepath: Path) -> List[Dict[str, Any]]:
+    rows = []
+    with filepath.open(encoding="utf-8") as csvf:
+        csvReader = csv.DictReader(csvf)
+        csvReader.fieldnames = [
+            field.lower() for field in csvReader.fieldnames
+        ]
+        rows = [row for row in csvReader]
+    return rows
