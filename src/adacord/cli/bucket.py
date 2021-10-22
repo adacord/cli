@@ -201,6 +201,7 @@ class DataFileFormat(str, Enum):
 def load_data(
     bucket_uuid: str,
     file: Path = typer.Option(
+        ...,
         help="The path to the data file",
         exists=True,
         file_okay=True,
@@ -210,6 +211,7 @@ def load_data(
         resolve_path=True,
     ),
     format: DataFileFormat = typer.Option(
+        ...,
         help="The format of the data file", case_sensitive=False
     ),
 ):
