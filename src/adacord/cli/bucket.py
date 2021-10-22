@@ -38,7 +38,7 @@ def create_bucket(
     )
     first_row = ("uuid", "name", "description", "url")
     values = [getattr(payload, entry) for entry in first_row]
-    first_row = ("ID", "Description", "URL")
+    first_row = ("ID", "Name", "Description", "URL")
     typer.echo(
         tabulate(
             [first_row, values], headers="firstrow", tablefmt="fancy_grid"
@@ -54,7 +54,7 @@ def list_buckets():
     """
     api = create_api()
     payload = api.Buckets.list()
-    first_row = ("uuid", "description", "url")
+    first_row = ("uuid", "name", "description", "url")
 
     if not payload:
         typer.echo(
@@ -68,7 +68,7 @@ def list_buckets():
     for index, row in enumerate(payload, 1):
         rows.append([index, *[getattr(row, entry) for entry in first_row]])
 
-    first_row = ("ID", "Description", "URL", "Schemaless")
+    first_row = ("ID", "Name", "Description", "URL", "Schemaless")
     first_row = ("", *first_row)
     typer.echo(
         tabulate([first_row, *rows], headers="firstrow", tablefmt="fancy_grid")
