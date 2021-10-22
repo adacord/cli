@@ -19,6 +19,7 @@ class DataFileFormat(str, Enum):
 @app.command("push")
 @cli_wrapper
 def push(
+    bucket_uuid: str,
     filepath: Path = typer.Option(
         "The path to the data file",
         exists=True,
@@ -43,7 +44,8 @@ def push(
         rows = parse_jsonlines(filepath)
 
     api = create_api()
-    api.Buckets.push(rows=rows)
+    bucket = api.Bucket(bucket_uuid)
+    bucket.push(rows=rows)
     typer.echo(
         typer.style(
             "The data has been loaded 🚀.",
