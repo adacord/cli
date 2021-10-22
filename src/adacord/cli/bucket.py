@@ -54,7 +54,7 @@ def list_buckets():
     """
     api = create_api()
     payload = api.Buckets.list()
-    first_row = ("uuid", "description", "name", "url")
+    first_row = ("uuid", "name", "description", "url")
 
     if not payload:
         typer.echo(
