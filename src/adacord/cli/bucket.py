@@ -211,8 +211,7 @@ def load_data(
         resolve_path=True,
     ),
     format: DataFileFormat = typer.Option(
-        ...,
-        help="The format of the data file", case_sensitive=False
+        ..., help="The format of the data file", case_sensitive=False
     ),
 ):
     """
