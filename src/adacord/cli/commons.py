@@ -31,3 +31,18 @@ def parse_csv(filepath: Path) -> List[Dict[str, Any]]:
         ]
         rows = [row for row in csvReader]
     return rows
+
+
+def parse_json(filepath: Path) -> List[Dict[str, Any]]:
+    rows = json.loads(filepath)
+    if isinstance(rows, dict):
+        rows = [rows]
+    return rows
+
+
+def parse_jsonlines(filepath: Path) -> List[Dict[str, Any]]:
+    rows = []
+    with filepath.open("r") as f:
+        for line in f:
+            rows.append(json.loads(line))
+    return rows
