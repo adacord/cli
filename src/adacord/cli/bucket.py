@@ -1,7 +1,11 @@
+from enum import Enum
+from pathlib import Path
+
 import typer
 from tabulate import tabulate
 
 from .api import create_api
+from .commons import parse_csv, parse_json, parse_jsonlines
 from .exceptions import cli_wrapper
 
 app = typer.Typer()
@@ -180,6 +184,52 @@ def delete_token(bucket_uuid: str, token_uuid: str):
     typer.echo(
         typer.style(
             f"API Token {token_uuid} deleted.",
+            fg=typer.colors.WHITE,
+            bold=True,
+        )
+    )
+
+
+class DataFileFormat(str, Enum):
+    csv = "csv"
+    json = "json"
+    jsonlines = "jsonlines"
+
+
+@app.command("load")
+@cli_wrapper
+def load_data(
+    bucket_uuid: str,
+    file: Path = typer.Option(
+        help="The path to the data file",
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        writable=False,
+        readable=True,
+        resolve_path=True,
+    ),
+    format: DataFileFormat = typer.Option(
+        help="The format of the data file", case_sensitive=False
+    ),
+):
+    """
+    Load the content of a data file to the bucket.
+    The file can be CSV, JSON, or JSON-lines.
+    """
+    if format == DataFileFormat.csv:
+        rows = parse_csv(file)
+    elif format == DataFileFormat.json:
+        rows = parse_json(file)
+    elif format == DataFileFormat.csv:
+        rows = parse_jsonlines(file)
+
+    api = create_api()
+    bucket = api.Bucket(bucket_uuid)
+    bucket.push(rows=rows)
+    typer.echo(
+        typer.style(
+            "The data has been loaded 🚀.",
             fg=typer.colors.WHITE,
             bold=True,
         )
