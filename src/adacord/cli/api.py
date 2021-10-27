@@ -84,7 +84,7 @@ class ApiClient:
     def base_path(self) -> str:
         return "https://api.adacord.com"
 
-    def url_for(self, endpoint: str, version: str = "v1") -> str:
+    def url_for(self, endpoint: str, version: str = "v0") -> str:
         """Return the absolute URL to the endpoint for the given API version."""
         suffix = f"{version}/{endpoint}" if endpoint else version
         return urllib.parse.urljoin(self.base_path, suffix)
@@ -101,7 +101,7 @@ class AdacrdClient:
     def base_path(self) -> str:
         return f"https://{self.bucket_name}.adacrd.in"
 
-    def url_for(self, endpoint: str, version: str = "v1") -> str:
+    def url_for(self, endpoint: str, version: str = "v0") -> str:
         """Return the absolute URL to the endpoint for the given API version."""
         suffix = f"{version}/{endpoint}" if endpoint else version
         return urllib.parse.urljoin(self.base_path, suffix)
@@ -157,9 +157,12 @@ class Buckets(ApiClient):
             self._bucket_from_payload(payload) for payload in bucket_payload
         ]
 
-    # TODO: get by name as well
-    def get(self, bucket: str) -> "Bucket":
-        endpoint = f"/buckets/{bucket}"
+    def get(self, bucket_ref: str) -> "Bucket":
+        """Return a Bucket.
+        Args:
+            bucket_ref: the name or the uuid of the bucket.
+        """
+        endpoint = f"/buckets/{bucket_ref}"
         url = self.url_for(endpoint)
         response = self.client.get(url)
         bucket_payload = response.json()
@@ -184,6 +187,22 @@ class Buckets(ApiClient):
     def delete_token(self, bucket: str, token_uuid: str):
         url = self.url_for(f"/buckets/{bucket}/tokens/{token_uuid}")
         response = self.client.delete(url)
+        return response.json()
+
+    def query(self, query: str) -> List[Dict[str, Any]]:
+        data = {"query": query}
+        response = self.client.post(self.url_for("/buckets/query"), json=data)
+        return response.json()
+
+    def push_data(self, bucket_ref: str, rows: List[Dict[str, Any]]):
+        data = {"data": rows}
+        response = self.client.post(
+            self.url_for(f"/buckets/{bucket_ref}/data"), json=data
+        )
+        return response.json()
+
+    def get_data(self, bucket_ref: str) -> List[Dict[str, Any]]:
+        response = self.client.get(self.url_for(f"/buckets/{bucket_ref}/data"))
         return response.json()
 
 
@@ -223,19 +242,11 @@ class Bucket(AdacrdClient):
     def delete_token(self, token_uuid: str) -> Dict[str, Any]:
         return self._buckets_router.delete_token(self.uuid, token_uuid)
 
-    def query(self, query: str) -> List[Dict[str, Any]]:
-        data = {"query": query}
-        response = self.client.post(self.url_for("/query"), json=data)
-        return response.json()
+    def push_data(self, rows: List[Dict[str, Any]]):
+        return self._buckets_router.push_data(self.uuid, rows)
 
-    def push(self, rows: List[Dict[str, Any]]):
-        data = {"data": rows}
-        response = self.client.post(self.url_for(""), json=data)
-        return response.json()
-
-    def fetch_all(self) -> List[Dict[str, Any]]:
-        response = self.client.get(self.url_for(""))
-        return response.json()
+    def get_data(self) -> List[Dict[str, Any]]:
+        return self._buckets_router.get_data(self.uuid)
 
 
 class AdacordApi:

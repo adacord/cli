@@ -97,8 +97,7 @@ def query_bucket(bucket_uuid: str, query: str = typer.Option(...)):
     Query a bucket using a SQL query.
     """
     api = create_api()
-    client = api.Bucket(bucket_uuid)
-    payload = client.query(query)
+    payload = api.Buckets.query(query)
     for row in payload:
         typer.echo(row)
 
@@ -196,9 +195,9 @@ class DataFileFormat(str, Enum):
     jsonlines = "jsonlines"
 
 
-@app.command("load")
+@app.command("push")
 @cli_wrapper
-def load_data(
+def push_data(
     bucket_uuid: str,
     file: Path = typer.Option(
         ...,
@@ -215,7 +214,7 @@ def load_data(
     ),
 ):
     """
-    Load the content of a data file to the bucket.
+    Push the content of a data file into the bucket.
     The file can be CSV, JSON, or JSON-lines.
     """
     if format == DataFileFormat.csv:
