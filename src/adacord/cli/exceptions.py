@@ -27,7 +27,7 @@ def cli_wrapper(func):
                     f"Error: {err.message}", fg=typer.colors.RED, bold=True
                 )
             )
-        except json.JSONDecodeError as err:
+        except json.JSONDecodeError:
             typer.echo(
                 typer.style(
                     "Ouch.... something bad happened :/",
