@@ -286,14 +286,14 @@ class TestBucket:
         rows = {"timestamp": "42", "data": []}
         data = {"result": []}
         with requests_mock.Mocker() as mock:
-            mock.post("https://api.adacord.com/v0/buckets/123/push", json=data)
+            mock.post("https://api.adacord.com/v0/buckets/123/data", json=data)
             response = bucket_client.push(rows)
             assert response == data
 
     def test_bucket__fetch_all(self, bucket_client):
         data = {"result": []}
         with requests_mock.Mocker() as mock:
-            mock.get("https://api.adacord.com/v0/buckets/123/get", json=data)
+            mock.get("https://api.adacord.com/v0/buckets/123/data", json=data)
             response = bucket_client.fetch_all()
             assert response == data
 
