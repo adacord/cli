@@ -90,23 +90,6 @@ class ApiClient:
         return urllib.parse.urljoin(self.base_path, suffix)
 
 
-class AdacrdClient:
-    """Client for the Adacrd Bucket API"""
-
-    def __init__(self, bucket_name: str, client: HTTPClient):
-        self.client = client
-        self.bucket_name = bucket_name
-
-    @property
-    def base_path(self) -> str:
-        return f"https://{self.bucket_name}.adacrd.in"
-
-    def url_for(self, endpoint: str, version: str = "v0") -> str:
-        """Return the absolute URL to the endpoint for the given API version."""
-        suffix = f"{version}/{endpoint}" if endpoint else version
-        return urllib.parse.urljoin(self.base_path, suffix)
-
-
 class User(ApiClient):
     def create(self, email: str, password: str):
         data = {"email": email, "password": password}
@@ -139,7 +122,7 @@ class Buckets(ApiClient):
         self, bucket_payload: Dict[str, Any]
     ) -> Union["Bucket", List["Bucket"]]:
         bucket_args = BucketArgs(**bucket_payload)
-        return Bucket(bucket_args, client=self.client, buckets_router=self)
+        return Bucket(bucket_args, buckets_router=self)
 
     def create(self, description: str, schemaless: bool) -> "Bucket":
         data = {"description": description, "schemaless": schemaless}
@@ -215,14 +198,12 @@ class BucketArgs:
     schemaless: bool
 
 
-class Bucket(AdacrdClient):
+class Bucket:
     def __init__(
         self,
         bucket_payload: BucketArgs,
-        client: HTTPClient,
         buckets_router: "Buckets",
     ):
-        super().__init__(bucket_payload.name, client=client)
         self.uuid = bucket_payload.uuid
         self.name = bucket_payload.name
         self.description = bucket_payload.description

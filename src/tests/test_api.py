@@ -10,7 +10,6 @@ from adacord.cli.api import (
     ApiClient,
     AdacordApi,
     HTTPClient,
-    AdacrdClient,
     AccessTokenAuth,
     CustomHTTPAdapter,
 )
@@ -107,23 +106,6 @@ class TestApiClient:
         api_client = ApiClient(client=http_client)
         result = api_client.url_for("/test")
         assert result == "https://api.adacord.com/v0/test"
-
-
-class TestAdacrdClient:
-    def test_init(self, http_client):
-        api_client = AdacrdClient(bucket_name="dump", client=http_client)
-        assert api_client
-        assert api_client.client == http_client
-        assert api_client.bucket_name == "dump"
-
-    def test_base_path(self, http_client):
-        api_client = AdacrdClient(bucket_name="dump", client=http_client)
-        assert api_client.base_path == "https://dump.adacrd.in"
-
-    def test_url_for(self, http_client):
-        api_client = AdacrdClient(bucket_name="dump", client=http_client)
-        result = api_client.url_for("/test")
-        assert result == "https://dump.adacrd.in/v0/test"
 
 
 class TestUser:
