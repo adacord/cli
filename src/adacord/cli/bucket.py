@@ -92,7 +92,7 @@ def delete_bucket(bucket: str):
 
 @app.command("query")
 @cli_wrapper
-def query_bucket(query: str = typer.Option(...)):
+def query_bucket(query: str = typer.Argument(...)):
     """
     Query a bucket using a SQL query.
     """
