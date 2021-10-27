@@ -15,6 +15,9 @@ bucket: Bucket = ada.Buckets.create(description="my-bucket", schemaless=False)
 # list the buckets in my account
 buckets: List[Bucket] = ada.Buckets.list()
 
+# query the bucket
+data: List[Dict[str, Any]] = ada.Buckets.query("SELECT * FROM bucket-name")
+
 # get an existing bucket from uuid
 bucket: Bucket = ada.get_bucket(uuid=bucket.uuid)
 
@@ -24,14 +27,11 @@ bucket_name: str = bucket.name
 # get the bucket url
 bucket_url: str = bucket.url
 
-# query the bucket
-data: List[Dict[str, Any]] = bucket.query("SELECT * FROM bucket-name")
-
 # push data to the bucket
-response = bucket.push({"hello": "ciao"})
+response = bucket.push_data({"hello": "ciao"})
 
 # fetch the whole data of a bucket
-rows: List[Dict[str, Any]] = bucket.fetch_all()
+rows: List[Dict[str, Any]] = bucket.get_data()
 
 # delete the bucket
 response = bucket.delete()
