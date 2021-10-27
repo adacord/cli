@@ -151,24 +151,24 @@ class Buckets(ApiClient):
         bucket_payload = response.json()
         return self._bucket_from_payload(bucket_payload)
 
-    def delete(self, bucket: str) -> Dict[str, Any]:
-        url = self.url_for(f"/buckets/{bucket}")
+    def delete(self, bucket_ref: str) -> Dict[str, Any]:
+        url = self.url_for(f"/buckets/{bucket_ref}")
         response = self.client.delete(url)
         return response.json()
 
-    def create_token(self, bucket: str, description: str = None):
+    def create_token(self, bucket_ref: str, description: str = None):
         data = {"description": description}
-        url = self.url_for(f"/buckets/{bucket}/tokens")
+        url = self.url_for(f"/buckets/{bucket_ref}/tokens")
         response = self.client.post(url, json=data)
         return response.json()
 
-    def get_tokens(self, bucket: str):
-        url = self.url_for(f"/buckets/{bucket}/tokens")
+    def get_tokens(self, bucket_ref: str):
+        url = self.url_for(f"/buckets/{bucket_ref}/tokens")
         response = self.client.get(url)
         return response.json()
 
-    def delete_token(self, bucket: str, token_uuid: str):
-        url = self.url_for(f"/buckets/{bucket}/tokens/{token_uuid}")
+    def delete_token(self, bucket_ref: str, token_uuid: str):
+        url = self.url_for(f"/buckets/{bucket_ref}/tokens/{token_uuid}")
         response = self.client.delete(url)
         return response.json()
 
