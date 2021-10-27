@@ -31,7 +31,7 @@ def api(http_client) -> AdacordApi:
 def bucket_client(api, fake_bucket_data) -> Bucket:
     with requests_mock.Mocker() as mock:
         mock.get(
-            "https://api.adacord.com/v1/buckets/123", json=fake_bucket_data
+            "https://api.adacord.com/v0/buckets/123", json=fake_bucket_data
         )
         client = api.Bucket("123")
         yield client
