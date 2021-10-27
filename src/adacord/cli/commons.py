@@ -34,7 +34,8 @@ def parse_csv(filepath: Path) -> List[Dict[str, Any]]:
 
 
 def parse_json(filepath: Path) -> List[Dict[str, Any]]:
-    rows = json.loads(filepath)
+    with open(filepath) as f:
+        rows = json.load(f)
     if isinstance(rows, dict):
         rows = [rows]
     return rows

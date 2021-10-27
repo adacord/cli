@@ -226,7 +226,7 @@ def push_data(
 
     api = create_api()
     bucket = api.Bucket(bucket_uuid)
-    bucket.push(rows=rows)
+    bucket.push_data(rows=rows)
     typer.echo(
         typer.style(
             "The data has been loaded 🚀.",
