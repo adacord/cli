@@ -187,12 +187,12 @@ class Buckets(ApiClient):
         return response.json()
 
     def get_data(self, bucket: str):
-        url = self.url_for(f"/buckets/{bucket}/get")
+        url = self.url_for(f"/buckets/{bucket}/data")
         response = self.client.get(url)
         return response.json()
 
     def push_data(self, bucket: str, rows: List[Dict[str, Any]]):
-        url = self.url_for(f"/buckets/{bucket}/push")
+        url = self.url_for(f"/buckets/{bucket}/data")
         data = {"data": rows}
         response = self.client.post(url, json=data)
         return response.json()
