@@ -4,10 +4,10 @@ from . import commons
 from .api import create_api
 from .exceptions import cli_wrapper
 
-app = typer.Typer()
+user = typer.Typer()
 
 
-@app.command()
+@user.command()
 @cli_wrapper
 def create():
     """
@@ -32,20 +32,43 @@ def create():
     )
 
 
-@app.command()
 @cli_wrapper
-def login(email: str = typer.Option(...)):
+def login_with_email_or_token(
+    email: str = typer.Option(None, help="Your user's email."),
+    token: str = typer.Option(None, help="Your API or Bucket token."),
+):
     """
-    Login with the cli.
+    Login with the cli using your user account or an API or Bucket token.
     """
-    password = typer.prompt("> What's your password?", hide_input=True)
-    api = create_api()
-    response = api.User.login(email, password)
-    auth = {"email": email, "token": response["access_token"]}
+    if not email and not token:
+        typer.echo(
+            typer.style(
+                "You need to pass your user'email or a token.",
+                fg=typer.colors.RED,
+                bold=True,
+            )
+        )
+    auth = {}
+    if email:
+        password = typer.prompt("> What's your password?", hide_input=True)
+        api = create_api()
+        response = api.User.login(email, password)
+        auth["email"] = email
+        auth["token"] = response["access_token"]
+    elif token:
+        auth["token"] = token
     commons.save_auth(auth)
 
 
-@app.command()
+@cli_wrapper
+def logout():
+    """
+    Logout.
+    """
+    commons.save_auth({})
+
+
+@user.command()
 @cli_wrapper
 def reset_password(email: str = typer.Option(...)):
     """
@@ -62,7 +85,7 @@ def reset_password(email: str = typer.Option(...)):
     )
 
 
-@app.command()
+@user.command()
 @cli_wrapper
 def email_verification(email: str = typer.Option(...)):
     """
