@@ -1,5 +1,5 @@
 
-# Use this as an Adacord CLI
+# How to use the Adacord CLI
 
 ```bash
 # create a new user
