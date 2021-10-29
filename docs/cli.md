@@ -8,7 +8,7 @@ adacord user create
 # login with your email and passowrd
 adacord login --email me@my-email.com
 
-# create a new bucket bucket
+# create a new bucket
 adacord bucket create --description "My first bucket"
 
 # Push data to your bucket
