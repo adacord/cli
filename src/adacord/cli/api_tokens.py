@@ -1,11 +1,7 @@
-from enum import Enum
-from pathlib import Path
-
 import typer
 from tabulate import tabulate
 
 from .api import create_api
-from .commons import parse_csv, parse_json, parse_jsonlines
 from .exceptions import cli_wrapper
 
 app = typer.Typer()
@@ -52,12 +48,12 @@ def list_api_tokens():
     Get your API tokens.
     """
     api = create_api()
-    payload = api.ApiTokens.list()
+    api_tokens = api.ApiTokens.list()
     first_row = ("uuid", "secret", "description", "created_on")
-    if not tokens:
+    if not api_tokens:
         typer.echo(
             typer.style(
-                f"No tokens for Bucket({bucket}).",
+                "No API tokens.",
                 fg=typer.colors.WHITE,
                 bold=True,
             )
@@ -65,7 +61,7 @@ def list_api_tokens():
         return
 
     rows = []
-    for index, row in enumerate(tokens, 1):
+    for index, row in enumerate(api_tokens, 1):
         rows.append([index, *[row[entry] for entry in first_row]])
 
     first_row = ("ID", "Secret", "Description", "Created on")
