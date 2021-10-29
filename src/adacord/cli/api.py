@@ -140,35 +140,35 @@ class Buckets(ApiClient):
             self._bucket_from_payload(payload) for payload in bucket_payload
         ]
 
-    def get(self, bucket_ref: str) -> "Bucket":
+    def get(self, bucket: str) -> "Bucket":
         """Return a Bucket.
         Args:
-            bucket_ref: the name or the uuid of the bucket.
+            bucket: the name or the uuid of the bucket.
         """
-        endpoint = f"/buckets/{bucket_ref}"
+        endpoint = f"/buckets/{bucket}"
         url = self.url_for(endpoint)
         response = self.client.get(url)
         bucket_payload = response.json()
         return self._bucket_from_payload(bucket_payload)
 
-    def delete(self, bucket_ref: str) -> Dict[str, Any]:
-        url = self.url_for(f"/buckets/{bucket_ref}")
+    def delete(self, bucket: str) -> Dict[str, Any]:
+        url = self.url_for(f"/buckets/{bucket}")
         response = self.client.delete(url)
         return response.json()
 
-    def create_token(self, bucket_ref: str, description: str = None):
+    def create_token(self, bucket: str, description: str = None):
         data = {"description": description}
-        url = self.url_for(f"/buckets/{bucket_ref}/tokens")
+        url = self.url_for(f"/buckets/{bucket}/tokens")
         response = self.client.post(url, json=data)
         return response.json()
 
-    def get_tokens(self, bucket_ref: str):
-        url = self.url_for(f"/buckets/{bucket_ref}/tokens")
+    def get_tokens(self, bucket: str):
+        url = self.url_for(f"/buckets/{bucket}/tokens")
         response = self.client.get(url)
         return response.json()
 
-    def delete_token(self, bucket_ref: str, token_uuid: str):
-        url = self.url_for(f"/buckets/{bucket_ref}/tokens/{token_uuid}")
+    def delete_token(self, bucket: str, token_uuid: str):
+        url = self.url_for(f"/buckets/{bucket}/tokens/{token_uuid}")
         response = self.client.delete(url)
         return response.json()
 
@@ -177,15 +177,15 @@ class Buckets(ApiClient):
         response = self.client.post(self.url_for("/buckets/query"), json=data)
         return response.json()
 
-    def push_data(self, bucket_ref: str, rows: List[Dict[str, Any]]):
+    def push_data(self, bucket: str, rows: List[Dict[str, Any]]):
         data = {"data": rows}
         response = self.client.post(
-            self.url_for(f"/buckets/{bucket_ref}/data"), json=data
+            self.url_for(f"/buckets/{bucket}/data"), json=data
         )
         return response.json()
 
-    def get_data(self, bucket_ref: str) -> List[Dict[str, Any]]:
-        response = self.client.get(self.url_for(f"/buckets/{bucket_ref}/data"))
+    def get_data(self, bucket: str) -> List[Dict[str, Any]]:
+        response = self.client.get(self.url_for(f"/buckets/{bucket}/data"))
         return response.json()
 
 
