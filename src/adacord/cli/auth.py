@@ -48,6 +48,7 @@ def login_with_email_or_token(
                 bold=True,
             )
         )
+        raise typer.Exit()
     auth = {}
     if email:
         password = typer.prompt("> What's your password?", hide_input=True)
