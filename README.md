@@ -1,7 +1,7 @@
 # Adacord CLI
 
 
-## Install the cli
+## Installation
 
 ```bash
 pip install adacord
