@@ -7,37 +7,39 @@
 pip install adacord
 ```
 
-## Create a new user
+## Usage
+
+### Create a new user
 
 ```bash
 adacord user create
 ```
 
-## Login
+### Login
 
 ```bash
 adacord user login --email me@my-email.com --password your-password
 ```
 
-## Create endpoint
+### Create endpoint
 
 ```bash
 adacord bucket create --description "A fancy bucket"
 ```
 
-## List endpoints
+### List endpoints
 
 ```bash
 adacord bucket list
 ```
 
-## Query endpoint
+### Query endpoint
 
 ```bash
 adacord bucket query my-bucket --query 'select * from my-bucket'
 ```
 
-## For developmenet
+# Contributing
 
 ```bash
 poetry install
