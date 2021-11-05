@@ -49,7 +49,7 @@ def list_api_tokens():
     """
     api = create_api()
     api_tokens = api.ApiTokens.list()
-    first_row = ("uuid", "secret", "description", "created_on")
+    first_row = ("uuid", "token", "description", "created_on")
     if not api_tokens:
         typer.echo(
             typer.style(
@@ -64,7 +64,7 @@ def list_api_tokens():
     for index, row in enumerate(api_tokens, 1):
         rows.append([index, *[row[entry] for entry in first_row]])
 
-    first_row = ("ID", "Secret", "Description", "Created on")
+    first_row = ("ID", "Token", "Description", "Created on")
     first_row = ("", *first_row)
     typer.echo(
         tabulate([first_row, *rows], headers="firstrow", tablefmt="fancy_grid")
