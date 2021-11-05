@@ -20,7 +20,7 @@ def create():
         "> What's your password?", hide_input=True, confirmation_prompt=True
     )
 
-    api = create_api()
+    api = create_api(with_auth=False)
     api.User.create(email, password)
 
     typer.echo(
@@ -52,7 +52,7 @@ def login_with_email_or_token(
     auth = {}
     if email:
         password = typer.prompt("> What's your password?", hide_input=True)
-        api = create_api()
+        api = create_api(with_auth=False)
         response = api.User.login(email, password)
         auth["email"] = email
         auth["token"] = response["access_token"]
@@ -75,7 +75,7 @@ def reset_password(email: str = typer.Option(...)):
     """
     Reset your user's password
     """
-    api = create_api()
+    api = create_api(with_auth=False)
     api.User.request_password_reset(email)
     typer.echo(
         typer.style(
@@ -93,7 +93,7 @@ def email_verification(email: str = typer.Option(...)):
     Request a new email verification email
     """
     password = typer.prompt("> What's your password?", hide_input=True)
-    api = create_api()
+    api = create_api(with_auth=False)
     api.User.request_verification_email(email, password)
     typer.echo(
         typer.style(

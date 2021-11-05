@@ -52,7 +52,7 @@ class CustomHTTPAdapter(requests.adapters.HTTPAdapter):
 class HTTPClient(requests.Session):
     """A class to make HTTP requests using the CustomHTTPAdapter."""
 
-    def __init__(self, auth: AuthBase):
+    def __init__(self, auth: AuthBase = None):
         super().__init__()
         self.auth: AuthBase = auth
         adapter = CustomHTTPAdapter()
@@ -124,7 +124,7 @@ class Buckets(ApiClient):
         bucket_args = BucketArgs(**bucket_payload)
         return Bucket(bucket_args, buckets_router=self)
 
-    def create(self, description: str, schemaless: bool) -> "Bucket":
+    def create(self, description: str, schemaless: bool = False) -> "Bucket":
         data = {"description": description, "schemaless": schemaless}
         url = self.url_for("/buckets")
         response = self.client.post(url, json=data)
@@ -229,6 +229,9 @@ class Bucket:
         self.schemaless = bucket_payload.schemaless
         self._buckets_router = buckets_router
 
+    def __repr__(self):
+        return f"Bucket<{self.name}>"
+
     def delete(self) -> Dict[str, Any]:
         return self._buckets_router.delete(self.uuid)
 
@@ -270,8 +273,13 @@ class AdacordApi:
         return self.Buckets.get(bucket_uuid)
 
     @classmethod
-    def Client(cls, token: str) -> "AdacordApi":
-        client = HTTPClient.with_token(token)
+    def Client(cls, with_auth: bool = True, token: str = None) -> "AdacordApi":
+        if token:
+            client = HTTPClient.with_token(token)
+        elif with_auth:
+            client = None
+        else:
+            client = HTTPClient()
         return cls(client)
 
     def create_bucket(self, description: str, schemaless: bool) -> Bucket:
@@ -281,5 +289,5 @@ class AdacordApi:
         return self.Buckets.get(bucket_uuid)
 
 
-def create_api() -> AdacordApi:
-    return AdacordApi.Client(get_token())
+def create_api(with_auth: bool = True) -> AdacordApi:
+    return AdacordApi.Client(with_auth=with_auth)

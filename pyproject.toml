@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "adacord"
-version = "0.1.8"
+version = "0.1.9"
 description = "The cli and sdk for adacord.com"
 authors = ["Christian Barra <me@christianbarra.com>", "Alexandre Savio <alexsavio@gmail.com>" ]
 
