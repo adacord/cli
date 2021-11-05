@@ -38,7 +38,7 @@ def login_with_email_or_token(
     token: str = typer.Option(None, help="Your API or Bucket token."),
 ):
     """
-    Login with the cli using your user account or an API or Bucket token.
+    Use the cli to log-in (with email/password or api/bucket token).
     """
     if not email and not token:
         typer.echo(
@@ -64,7 +64,7 @@ def login_with_email_or_token(
 @cli_wrapper
 def logout():
     """
-    Logout.
+    To Logout. For real.
     """
     commons.save_auth({})
 

@@ -189,6 +189,24 @@ class Buckets(ApiClient):
         return response.json()
 
 
+class ApiTokens(ApiClient):
+    def create(self, description: str = None):
+        data = {"description": description}
+        url = self.url_for("/api_tokens")
+        response = self.client.post(url, json=data)
+        return response.json()
+
+    def list(self):
+        url = self.url_for("/api_tokens")
+        response = self.client.get(url)
+        return response.json()
+
+    def delete(self, token_uuid: str):
+        url = self.url_for(f"/api_tokens/{token_uuid}")
+        response = self.client.delete(url)
+        return response.json()
+
+
 @dataclass
 class BucketArgs:
     uuid: str
@@ -243,6 +261,10 @@ class AdacordApi:
     @property
     def Buckets(self) -> Buckets:
         return Buckets(self.client)
+
+    @property
+    def ApiTokens(self) -> Buckets:
+        return ApiTokens(self.client)
 
     def Bucket(self, bucket_uuid: str) -> Bucket:
         return self.Buckets.get(bucket_uuid)

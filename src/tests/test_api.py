@@ -249,7 +249,7 @@ class TestBuckets:
 
 
 class TestBucket:
-    """Test API interface that deal with a SINGLE bucket"""
+    """Test API interface that deals with a SINGLE bucket"""
 
     def test_bucket__get(self, api, fake_bucket_data):
         with requests_mock.Mocker() as mock:
@@ -327,3 +327,32 @@ class TestAdacordApi:
         with requests_mock.Mocker() as mock:
             mock.get("https://api.adacord.com/v0/buckets", text=callback)
             api.Buckets.list()
+
+
+class TestApiTokens:
+    """Test API interface for Api Tokens"""
+
+    def test_create_token(self, api, fake_token_data):
+        with requests_mock.Mocker() as mock:
+            mock.post(
+                "https://api.adacord.com/v0/api_tokens",
+                json=fake_token_data,
+            )
+            response = api.ApiTokens.create(description="")
+            assert response == fake_token_data
+
+    def test_get_tokens(self, api, fake_token_data):
+        data = [fake_token_data]
+        with requests_mock.Mocker() as mock:
+            mock.get("https://api.adacord.com/v0/api_tokens", json=data)
+            response = api.ApiTokens.list()
+            assert response == data
+
+    def test_delete_token(self, api, fake_token_data):
+        with requests_mock.Mocker() as mock:
+            mock.delete(
+                "https://api.adacord.com/v0/api_tokens/8901",
+                json=fake_token_data,
+            )
+            response = api.ApiTokens.delete(token_uuid="8901")
+            assert response == fake_token_data
