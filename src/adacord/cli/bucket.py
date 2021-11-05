@@ -118,7 +118,7 @@ def create_token(
     payload = client.create_token(description)
     typer.echo(
         typer.style(
-            "API Token created.",
+            "Bucket Token created.",
             fg=typer.colors.WHITE,
             bold=True,
         )
@@ -182,7 +182,7 @@ def delete_token(bucket_uuid: str, token_uuid: str):
     client.delete_token(token_uuid=token_uuid)
     typer.echo(
         typer.style(
-            f"API Token {token_uuid} deleted.",
+            f"Bucket Token {token_uuid} deleted.",
             fg=typer.colors.WHITE,
             bold=True,
         )
