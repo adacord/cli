@@ -52,7 +52,7 @@ class CustomHTTPAdapter(requests.adapters.HTTPAdapter):
 class HTTPClient(requests.Session):
     """A class to make HTTP requests using the CustomHTTPAdapter."""
 
-    def __init__(self, auth: AuthBase):
+    def __init__(self, auth: AuthBase = None):
         super().__init__()
         self.auth: AuthBase = auth
         adapter = CustomHTTPAdapter()
@@ -248,8 +248,16 @@ class AdacordApi:
         return self.Buckets.get(bucket_uuid)
 
     @classmethod
-    def Client(cls, token: str) -> "AdacordApi":
-        client = HTTPClient.with_token(token)
+    def AuthdClient(cls, token: str = None) -> "AdacordApi":
+        client = None
+        if token:
+            client = HTTPClient.with_token(token)
+
+        return cls(client)
+
+    @classmethod
+    def Client(cls) -> "AdacordApi":
+        client = HTTPClient()
         return cls(client)
 
     def create_bucket(self, description: str, schemaless: bool) -> Bucket:
@@ -259,5 +267,7 @@ class AdacordApi:
         return self.Buckets.get(bucket_uuid)
 
 
-def create_api() -> AdacordApi:
-    return AdacordApi.Client(get_token())
+def create_api(with_auth: bool = True) -> AdacordApi:
+    if with_auth:
+        return AdacordApi.AuthdClient()
+    return AdacordApi.Client()
