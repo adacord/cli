@@ -269,8 +269,8 @@ class AdacordApi:
     def ApiTokens(self) -> Buckets:
         return ApiTokens(self.client)
 
-    def Bucket(self, bucket_uuid: str) -> Bucket:
-        return self.Buckets.get(bucket_uuid)
+    def Bucket(self, bucket: str) -> Bucket:
+        return self.Buckets.get(bucket)
 
     @classmethod
     def Client(cls, with_auth: bool = True, token: str = None) -> "AdacordApi":
@@ -285,8 +285,8 @@ class AdacordApi:
     def create_bucket(self, description: str, schemaless: bool) -> Bucket:
         return self.Buckets.create(description, schemaless)
 
-    def get_bucket(self, bucket_uuid: str) -> Bucket:
-        return self.Buckets.get(bucket_uuid)
+    def get_bucket(self, bucket: str) -> Bucket:
+        return self.Buckets.get(bucket)
 
 
 def create_api(with_auth: bool = True) -> AdacordApi:
