@@ -77,7 +77,9 @@ def list_buckets():
 
 @app.command("delete")
 @cli_wrapper
-def delete_bucket(bucket: str):
+def delete_bucket(
+    bucket: str = typer.Argument(..., help="The bucket uuid or name.")
+):
     """
     Delete a bucket.
     """
@@ -142,7 +144,9 @@ def create_token(
 
 @token_app.command("list")
 @cli_wrapper
-def list_tokens(bucket: str = typer.Argument(..., help="The bucket uuid.")):
+def list_tokens(
+    bucket: str = typer.Argument(..., help="The bucket uuid or name.")
+):
     """
     Get your tokens.
     """
@@ -173,12 +177,15 @@ def list_tokens(bucket: str = typer.Argument(..., help="The bucket uuid.")):
 
 @token_app.command("delete")
 @cli_wrapper
-def delete_token(bucket_uuid: str, token_uuid: str):
+def delete_token(
+    bucket: str = typer.Argument(..., help="The bucket uuid or name."),
+    token_uuid: str = typer.Argument(..., help="The token uuid."),
+):
     """
     Delete an API Token.
     """
     api = create_api()
-    client = api.Bucket(bucket_uuid)
+    client = api.Bucket(bucket)
     client.delete_token(token_uuid=token_uuid)
     typer.echo(
         typer.style(
@@ -198,7 +205,7 @@ class DataFileFormat(str, Enum):
 @app.command("push")
 @cli_wrapper
 def push_data(
-    bucket_uuid: str,
+    bucket: str = typer.Argument(..., help="The bucket uuid or name."),
     file: Path = typer.Option(
         ...,
         help="The path to the data file",
@@ -225,7 +232,7 @@ def push_data(
         rows = parse_jsonlines(file)
 
     api = create_api()
-    bucket = api.Bucket(bucket_uuid)
+    bucket = api.Bucket(bucket)
     bucket.push_data(rows=rows)
     typer.echo(
         typer.style(
