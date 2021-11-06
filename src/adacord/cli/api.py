@@ -124,7 +124,9 @@ class Buckets(ApiClient):
         bucket_args = BucketArgs(**bucket_payload)
         return Bucket(bucket_args, buckets_router=self)
 
-    def create(self, description: str, schemaless: bool = False) -> "Bucket":
+    def create(
+        self, description: str = "", schemaless: bool = False
+    ) -> "Bucket":
         data = {"description": description, "schemaless": schemaless}
         url = self.url_for("/buckets")
         response = self.client.post(url, json=data)
