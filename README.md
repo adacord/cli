@@ -18,7 +18,7 @@ adacord user create
 ### Login
 
 ```bash
-adacord user login --email me@my-email.com
+adacord login --email me@my-email.com
 ```
 
 ### Create endpoint
