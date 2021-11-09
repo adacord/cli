@@ -1,6 +1,5 @@
 import urllib
 from typing import Any, Dict, List, Union, Callable
-from dataclasses import dataclass
 
 import requests
 from requests.auth import AuthBase
@@ -125,9 +124,16 @@ class Buckets(ApiClient):
         return Bucket(bucket_args, buckets_router=self)
 
     def create(
-        self, description: str = "", schemaless: bool = False
+        self,
+        description: str = "",
+        schemaless: bool = False,
+        enabled_google_pubsub_sa: str = None,
     ) -> "Bucket":
-        data = {"description": description, "schemaless": schemaless}
+        data = {
+            "description": description,
+            "schemaless": schemaless,
+            "enabled_google_pubsub_sa": enabled_google_pubsub_sa,
+        }
         url = self.url_for("/buckets")
         response = self.client.post(url, json=data)
         bucket_payload = response.json()
@@ -209,13 +215,24 @@ class ApiTokens(ApiClient):
         return response.json()
 
 
-@dataclass
 class BucketArgs:
-    uuid: str
-    name: str
-    description: str
-    url: str
-    schemaless: bool
+    def __init__(
+        self,
+        uuid: str,
+        name: str,
+        description: str,
+        url: str,
+        schemaless: bool,
+        enabled_google_pubsub_sa: str,
+        *args,
+        **kwargs,
+    ) -> None:
+        self.uuid = uuid
+        self.name = name
+        self.description = description
+        self.url = url
+        self.schemaless = schemaless
+        self.enabled_google_pubsub_sa = enabled_google_pubsub_sa
 
 
 class Bucket:

@@ -9,6 +9,7 @@ from requests.auth import AuthBase
 from adacord.cli.api import (
     ApiClient,
     AdacordApi,
+    BucketArgs,
     HTTPClient,
     AccessTokenAuth,
     CustomHTTPAdapter,
@@ -356,3 +357,21 @@ class TestApiTokens:
             )
             response = api.ApiTokens.delete(token_uuid="8901")
             assert response == fake_token_data
+
+
+def test_bucket_args():
+    bucket = BucketArgs(
+        uuid="uuid",
+        name="name",
+        description="description",
+        url="url",
+        schemaless=True,
+        enabled_google_pubsub_sa="my-gcp-sa",
+        unexpected_field="unexpected_field",
+    )
+    assert bucket.uuid
+    assert bucket.name
+    assert bucket.description
+    assert bucket.url
+    assert bucket.schemaless
+    assert bucket.enabled_google_pubsub_sa

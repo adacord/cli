@@ -55,4 +55,5 @@ def fake_bucket_data():
         "url": "https://your-bucket.ada.in",
         "schemaless": "false",
         "description": "fake bucket",
+        "enabled_google_pubsub_sa": "my-gcp-sa-account",
     }
