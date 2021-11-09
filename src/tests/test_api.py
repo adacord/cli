@@ -361,12 +361,17 @@ class TestApiTokens:
 
 def test_bucket_args():
     bucket = BucketArgs(
-        "uuid",
-        "name",
-        "description",
-        "url",
-        True,
-        "another_field",
-        field_1="another_unexpected_field",
+        uuid="uuid",
+        name="name",
+        description="description",
+        url="url",
+        schemaless=True,
+        enabled_google_pubsub_sa="my-gcp-sa",
+        unexpected_field="unexpected_field",
     )
     assert bucket.uuid
+    assert bucket.name
+    assert bucket.description
+    assert bucket.url
+    assert bucket.schemaless
+    assert bucket.enabled_google_pubsub_sa

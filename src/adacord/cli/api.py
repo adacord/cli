@@ -1,6 +1,5 @@
 import urllib
 from typing import Any, Dict, List, Union, Callable
-from dataclasses import field, dataclass
 
 import requests
 from requests.auth import AuthBase
