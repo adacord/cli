@@ -23,12 +23,22 @@ def create_bucket(
         help="Create a schemaless bucket.",
         show_default=False,
     ),
+    enabled_google_pubsub_sa: str = typer.Option(
+        None,
+        "--pubsub-sa",
+        help="If you want to stream your data from a Google PubSub subscription.",
+        show_default=False,
+    ),
 ):
     """
     Create a new bucket.
     """
     api = create_api()
-    payload = api.Buckets.create(description, schemaless=schemaless)
+    payload = api.Buckets.create(
+        description,
+        schemaless=schemaless,
+        enabled_google_pubsub_sa=enabled_google_pubsub_sa,
+    )
     typer.echo(
         typer.style(
             "Bucket created, you can start sending data 🚀",

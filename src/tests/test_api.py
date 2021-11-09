@@ -9,6 +9,7 @@ from requests.auth import AuthBase
 from adacord.cli.api import (
     ApiClient,
     AdacordApi,
+    BucketArgs,
     HTTPClient,
     AccessTokenAuth,
     CustomHTTPAdapter,
@@ -356,3 +357,16 @@ class TestApiTokens:
             )
             response = api.ApiTokens.delete(token_uuid="8901")
             assert response == fake_token_data
+
+
+def test_bucket_args():
+    bucket = BucketArgs(
+        "uuid",
+        "name",
+        "description",
+        "url",
+        True,
+        "another_field",
+        field_1="another_unexpected_field",
+    )
+    assert bucket.uuid
