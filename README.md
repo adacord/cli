@@ -18,7 +18,7 @@ adacord user create
 ### Login
 
 ```bash
-adacord user login --email me@my-email.com --password your-password
+adacord login --email me@my-email.com
 ```
 
 ### Create endpoint
@@ -36,7 +36,7 @@ adacord bucket list
 ### Query endpoint
 
 ```bash
-adacord bucket query my-bucket --query 'select * from my-bucket'
+adacord bucket query 'select * from `my-bucket`'
 ```
 
 # Contributing
