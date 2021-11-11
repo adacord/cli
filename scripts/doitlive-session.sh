@@ -1,6 +1,8 @@
 # This is the doitlive session to record how to use the CLI
-# pip install doitlive asciinema
-# asciinema rec -c "doitlive play scripts/doitlive-session.sh -q"
+# $ mkdir -p ~/.config/asciinema
+# $ cp asciinema-config ~/.config/asciinema
+# $ pip install doitlive asciinema
+# $ asciinema rec -c "doitlive play scripts/doitlive-session.sh -q"
 #
 #doitlive speed: 3
 #doitlive prompt: nicolauj
