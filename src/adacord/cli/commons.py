@@ -6,6 +6,10 @@ from pathlib import Path
 CONFIG_FOLDER_PATH = Path.home() / ".adacord"
 
 
+def clean_field(field: str) -> str:
+    return field.replace('"', "").replace("'", "").strip(" ").lower()
+
+
 def save_auth(payload, base_path=CONFIG_FOLDER_PATH):
     Path(base_path).mkdir(exist_ok=True)
     with open(base_path / "auth.json", "w+") as f:
@@ -27,7 +31,7 @@ def parse_csv(filepath: Path) -> List[Dict[str, Any]]:
     with filepath.open(encoding="utf-8") as csvf:
         csvReader = csv.DictReader(csvf)
         csvReader.fieldnames = [
-            field.lower() for field in csvReader.fieldnames
+            clean_field(field) for field in csvReader.fieldnames
         ]
         rows = [row for row in csvReader]
     return rows
