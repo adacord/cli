@@ -7,7 +7,7 @@ CONFIG_FOLDER_PATH = Path.home() / ".adacord"
 
 
 def clean_field(field: str) -> str:
-    return field.replace('"', "").strip(" ").lower()
+    return field.replace('"', "").replace("'", "").strip(" ").lower()
 
 
 def save_auth(payload, base_path=CONFIG_FOLDER_PATH):
