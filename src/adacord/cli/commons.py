@@ -6,7 +6,7 @@ from pathlib import Path
 CONFIG_FOLDER_PATH = Path.home() / ".adacord"
 
 
-def clean_field(field: str):
+def clean_field(field: str) -> str:
     return field.replace('"', "").strip(" ").lower()
 
 
